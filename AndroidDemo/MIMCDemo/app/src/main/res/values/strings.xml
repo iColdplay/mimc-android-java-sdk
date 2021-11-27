@@ -78,4 +78,7 @@
     <string name="call_canceled">聊天已取消</string>
     <string name="audio_encode_failed">音频编码失败</string>
     <string name="audio_decode_failed">音频解码失败</string>
+
+    <string name="firmware_initializing">正在初始化…</string>
+
 </resources>

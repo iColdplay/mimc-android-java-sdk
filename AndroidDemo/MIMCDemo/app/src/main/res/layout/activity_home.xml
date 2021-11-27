@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:background="@color/colorPrimaryDark"
+            android:id="@+id/ll_normal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ID: "
+                    android:textAllCaps="false" />
+
+                <EditText
+                    android:id="@+id/et_to_who"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_call"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="call"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:background="@color/colorPrimaryDark"
+            android:id="@+id/ll_login"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:background="@color/colorWhite"
+                    android:textAlignment="center"
+                    android:id="@+id/et"
+                    android:layout_width="200dp"
+                    android:layout_height="50dp" />
+            </LinearLayout>
+
+            <TextView
+                android:textSize="20sp"
+                android:textColor="@color/colorWhite"
+                android:gravity="center"
+                android:id="@+id/tv_login"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="@string/login"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_initializing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ProgressBar
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:layout_gravity="center"
+                android:indeterminateDrawable="@drawable/anim_progress"
+                android:indeterminateDuration="1000" />
+
+            <TextView
+                android:id="@+id/tv_status_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/firmware_initializing"
+                android:textColor="@color/colorText"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</layout>

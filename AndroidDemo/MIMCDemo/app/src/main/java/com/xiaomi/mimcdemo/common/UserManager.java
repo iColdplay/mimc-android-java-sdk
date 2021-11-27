@@ -36,9 +36,9 @@ public class UserManager {
      * 此处appId/appKey/appSec为小米MimcDemo所有，会在一定时间后失效，建议开发者自行申请
      **/
     // online
-    private long appId = 2882303761517669588L;
-    private String appKey = "5111766983588";
-    private String appSecret = "b0L3IOz/9Ob809v8H2FbVg==";
+    private long appId = 2882303761520110176L;
+    private String appKey = "5572011075176";
+    private String appSecret = "3e1axtDPYnTXDD8oMe4yLA==";
     private String regionKey = "REGION_CN";
     private String domain = "https://mimc.chat.xiaomi.net/";
 

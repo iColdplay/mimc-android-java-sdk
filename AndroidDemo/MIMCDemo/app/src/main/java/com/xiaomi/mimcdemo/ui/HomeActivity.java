@@ -5,10 +5,14 @@ import android.app.Application;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +38,9 @@ public class HomeActivity extends Activity {
     private MMKV mmkv;
 
     private long exitTime;
+
+    public static Handler mainHandler;
+    public static final int MSG_LOGOUT = 1001;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -65,14 +72,6 @@ public class HomeActivity extends Activity {
             };gonnaFinishThread.start();
         }
 
-        binding.btnCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goCallSomebody();
-            }
-        });
-
-
         requestPermissions(new String[]{"android.permission.RECORD_AUDIO",
                 "android.permission.WRITE_EXTERNAL_STORAGE",
                 "android.permission.MODIFY_AUDIO_SETTINGS"}, 0);
@@ -82,6 +81,8 @@ public class HomeActivity extends Activity {
         assert name != null;
         if(name.length() > 0 && !TextUtils.isEmpty(name)){
             binding.et.setText(name);
+            binding.et.requestFocus();
+            binding.et.setSelection(binding.et.getText().toString().length());
         }else {
             binding.et.setText("");
             binding.et.setHint("Please Input ID");
@@ -93,6 +94,17 @@ public class HomeActivity extends Activity {
                 doLogin();
             }
         });
+
+        mainHandler = new Handler(Looper.myLooper()){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if(msg.what == MSG_LOGOUT){
+                    LogUtil.e(TAG, "HomeActivity logout");
+                    uiGoLoginLayout();
+                }
+            }
+        };
     }
 
     private void doLogin(){
@@ -108,16 +120,27 @@ public class HomeActivity extends Activity {
             Toast.makeText(HomeActivity.this, "ID过长, 最大长度为10", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // 如果缓存中记录了user name, 使用缓存的user name, 如果没有则提示 Please Input ID
         String name = binding.et.getText().toString();
         mmkv.putString(CustomKeys.KEY_USER_NAME, name);
         MIMCUser user = userManager.newMIMCUser(name);
         boolean result = user.login();
         if (result) {
+            hideInput();
             Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
             uiGoNormalLayout();
         } else {
             Toast.makeText(this, "登录失败, 请稍后再试", Toast.LENGTH_SHORT).show();
         }
+
+        binding.tvUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogoutDialog logoutDialog = LogoutDialog.newInstance();
+                logoutDialog.show(getFragmentManager(), LogoutDialog.TAG);
+            }
+        });
     }
 
     @Override
@@ -143,38 +166,12 @@ public class HomeActivity extends Activity {
         }
     }
 
-    private void getLogin() {
-        String name = getAppCountText();
-        if (isNull(name) || TextUtils.isEmpty(name)) {
-            Toast.makeText(this, "ID无效", Toast.LENGTH_SHORT).show();
-        } else {
-            MIMCUser user = userManager.newMIMCUser(name);
-            boolean result = user.login();
-            if (result) {
-                Toast.makeText(this, "登录成功", Toast.LENGTH_SHORT).show();
-                uiGoNormalLayout();
-            } else {
-                Toast.makeText(this, "登录失败, 请稍后再试", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void goCallSomebody() {
-        String toWho = binding.etToWho.getText().toString();
-        if (!TextUtils.isEmpty(toWho)) {
-            if (UserManager.getInstance().getStatus() == MIMCConstant.OnlineStatus.ONLINE) {
-                VoiceCallActivity.actionStartActivity(this, toWho);
-            } else {
-                Toast.makeText(this, "not even login, please login", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
     private void uiGoLoginLayout() {
         binding.llLogin.setVisibility(View.VISIBLE);
         binding.llInitializing.setVisibility(View.GONE);
         binding.llNormal.setVisibility(View.GONE);
+        binding.et.requestFocus();
+        binding.et.setSelection(binding.et.getText().toString().length());
     }
 
     private void uiGoInitializingLayout() {
@@ -187,20 +184,22 @@ public class HomeActivity extends Activity {
         binding.llNormal.setVisibility(View.VISIBLE);
         binding.llInitializing.setVisibility(View.GONE);
         binding.llLogin.setVisibility(View.GONE);
+
+        // 显示 user name
+        String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "");
+        binding.tvUserName.setText(name);
     }
 
-    private String getAppCountText() {
-        LogUtil.e(TAG, "getAppCountText(0 invoke()");
-        String text = binding.et.getText().toString();
-        if (!TextUtils.isEmpty(text)) {
-            LogUtil.e(TAG, "the app name is: " + text);
-            return text;
-        } else {
-            return null;
+
+    /**
+     * 隐藏键盘
+     */
+    protected void hideInput() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        View v = getWindow().peekDecorView();
+        if (null != v) {
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
     }
 
-    private boolean isNull(Object x) {
-        return x == null;
-    }
 }

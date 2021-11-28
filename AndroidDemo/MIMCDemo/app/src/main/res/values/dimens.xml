@@ -9,4 +9,27 @@
     <dimen name="item_height">60dp</dimen>
     <dimen name="item_weight">0dp</dimen>
     <dimen name="name_contacts">18sp</dimen>
+
+    <!-- dialog item -->
+    <dimen name="list_item_height">61.33dp</dimen>
+    <dimen name="item_title_size">16sp</dimen>
+    <dimen name="common_margin">42.67dp</dimen>
+
+    <!--dialog-->
+    <dimen name="dialog_width">312dp</dimen>
+    <dimen name="dialog_radius">7.5dp</dimen>
+    <dimen name="dialog_margin">24dp</dimen>
+    <dimen name="dialog_insert_margin">0dp</dimen>
+    <dimen name="dialog_margin_middle">16dp</dimen>
+    <dimen name="dialog_margin_smaller">12dp</dimen>
+    <dimen name="dialog_title_size">16sp</dimen>
+    <dimen name="dialog_content_size">14sp</dimen>
+    <dimen name="dialog_content_small_size">12sp</dimen>
+    <dimen name="dialog_btn_size">16sp</dimen>
+    <dimen name="dialog_edit_padding">8dp</dimen>
+    <dimen name="dialog_edit_divider_width">1dp</dimen>
+    <dimen name="dialog_edit_divider_height">20dp</dimen>
+    <dimen name="dialog_btn_height">52dp</dimen>
+
+    <dimen name="divider_width">0.5dp</dimen>
 </resources>

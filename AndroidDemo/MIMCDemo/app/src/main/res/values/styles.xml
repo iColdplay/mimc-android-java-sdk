@@ -26,4 +26,63 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowBackground">@drawable/bg_shape_dialog</item>
+    </style>
+
+    <style name="DialogTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/dialog_title_size</item>
+        <item name="android:textColor">@color/colorDialogText</item>
+        <item name="android:layout_marginTop">@dimen/dialog_margin</item>
+        <item name="android:paddingStart">@dimen/dialog_margin</item>
+        <item name="android:paddingEnd">@dimen/dialog_margin</item>
+    </style>
+
+    <style name="DialogContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/dialog_content_size</item>
+        <item name="android:textColor">@color/colorDialogText</item>
+        <item name="android:paddingStart">@dimen/dialog_margin</item>
+        <item name="android:paddingEnd">@dimen/dialog_margin</item>
+    </style>
+
+    <style name="DialogButtonDivider">
+        <item name="android:layout_width">@dimen/divider_width</item>
+        <item name="android:layout_height">@dimen/dialog_btn_height</item>
+        <item name="android:background">@color/dividerColor</item>
+    </style>
+
+    <style name="DialogButton">
+        <item name="android:layout_height">@dimen/dialog_btn_height</item>
+        <item name="android:background">@drawable/bg_selector_dialog_btn</item>
+        <item name="android:textColor">@color/selector_dialog_btn_color</item>
+        <item name="android:textSize">@dimen/dialog_btn_size</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="DialogNegativeButton">
+        <item name="android:layout_height">@dimen/dialog_btn_height</item>
+        <item name="android:background">@drawable/bg_selector_dialog_negative_btn</item>
+        <item name="android:textColor">@color/selector_dialog_btn_color</item>
+        <item name="android:textSize">@dimen/dialog_btn_size</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="DialogPositiveButton">
+        <item name="android:layout_height">@dimen/dialog_btn_height</item>
+        <item name="android:background">@drawable/bg_selector_dialog_positive_btn</item>
+        <item name="android:textColor">@color/selector_dialog_btn_color</item>
+        <item name="android:textSize">@dimen/dialog_btn_size</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 </resources>

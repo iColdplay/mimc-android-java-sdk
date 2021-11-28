@@ -10,12 +10,20 @@ import com.xiaomi.mimc.logger.Logger;
 import com.xiaomi.mimc.logger.MIMCLog;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
+import org.xml.sax.ext.LexicalHandler;
+
 
 public class MIMCApplication extends Application {
 
     private static final String TAG = MIMCApplication.class.getSimpleName();
 
     private static Context context;
+
+    private static MIMCApplication instance;
+
+    public static MIMCApplication getInstance() {
+        return instance;
+    }
 
     @Override
     public void onCreate() {
@@ -70,9 +78,15 @@ public class MIMCApplication extends Application {
         // mmkv
         String rootDir = MMKV.initialize(this);
         LogUtil.e(TAG, "rootDir is: " + rootDir);
+
+        instance = this;
     }
 
     public static Context getContext() {
         return context;
+    }
+
+    public void exit(){
+        System.exit(0);
     }
 }

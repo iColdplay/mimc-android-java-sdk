@@ -1,6 +1,7 @@
 package com.xiaomi.mimcdemo.ui;
 
 import android.app.Activity;
+import android.app.Application;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,8 @@ public class HomeActivity extends Activity {
     private UserManager userManager;
 
     private MMKV mmkv;
+
+    private long exitTime;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -130,8 +134,13 @@ public class HomeActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         LogUtil.e(TAG, "onBackPressed()");
+        if((System.currentTimeMillis()-exitTime) > 2000){
+            Toast.makeText(HomeActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        } else {
+            MIMCApplication.getInstance().exit();
+        }
     }
 
     private void getLogin() {

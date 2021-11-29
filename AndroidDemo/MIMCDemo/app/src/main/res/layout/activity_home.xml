@@ -35,12 +35,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="left"
+                        android:weightSum="1"
                         android:orientation="horizontal"
                         tools:ignore="RtlHardcoded">
 
                         <TextView
                             android:id="@+id/tv_user_name"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.75"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="25dp"
                             android:layout_marginTop="50dp"
@@ -49,11 +51,22 @@
                             android:textSize="30sp" />
 
                         <ImageView
+                            android:layout_gravity="right|bottom"
+                            android:layout_marginBottom="10dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.1"
                             android:id="@+id/image_qrcode"
-                            android:layout_marginStart="230dp"
-                            android:layout_marginTop="60dp"
                             android:src="@drawable/qrcode_red"
-                            android:layout_width="20dp"
+                            android:layout_height="20dp"/>
+
+                        <ImageView
+                            android:layout_gravity="left|bottom"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="0.15"
+                            android:id="@+id/image_scan"
+                            android:src="@drawable/scan_red"
                             android:layout_height="20dp"/>
 
                     </LinearLayout>
@@ -98,11 +111,20 @@
 
                         <!-- Surface View Start -->
                         <LinearLayout
-                            android:padding="10dp"
+                            android:id="@+id/ll_swipe_info"
+                            android:gravity="center"
                             android:background="@color/colorPrimary"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
                             <!--What you want to show in SurfaceView-->
+
+                            <TextView
+                                android:textColor="@color/colorWhite"
+                                android:textSize="15sp"
+                                android:textAllCaps="false"
+                                android:id="@+id/tv_recent_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
                         </LinearLayout>
                         <!-- Surface View End -->
                     </com.daimajia.swipe.SwipeLayout>

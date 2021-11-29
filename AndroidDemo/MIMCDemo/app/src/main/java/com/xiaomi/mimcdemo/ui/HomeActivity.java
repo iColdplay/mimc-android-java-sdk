@@ -11,6 +11,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -158,10 +159,25 @@ public class HomeActivity extends Activity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onResume() {
         super.onResume();
         LogUtil.e(TAG, "onResume()");
+        checkIfHaveRecent();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void checkIfHaveRecent(){
+        LogUtil.e(TAG, "checkIfHaveRecent()");
+        String recentContact = mmkv.getString(CustomKeys.KEY_RECENT_CONTACT, "");
+        if(recentContact.length() == 0) {
+            binding.tvRecentName.setText("暂无");
+            binding.swipeLayout.setSwipeEnabled(false);
+            binding.llSwipeInfo.setBackgroundColor(getColor(R.color.colorPrimaryDark));
+        }else {
+            binding.tvRecentName.setText(recentContact);
+        }
     }
 
     @Override

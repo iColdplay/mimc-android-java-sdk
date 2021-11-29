@@ -2,15 +2,25 @@ package com.xiaomi.mimcdemo.ui;
 
 
 import android.app.Application;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tencent.mmkv.MMKV;
 import com.xiaomi.mimc.logger.Logger;
 import com.xiaomi.mimc.logger.MIMCLog;
+import com.xiaomi.mimcdemo.database.Contact;
+import com.xiaomi.mimcdemo.database.DBHelper;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
 import org.xml.sax.ext.LexicalHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MIMCApplication extends Application {
@@ -24,6 +34,9 @@ public class MIMCApplication extends Application {
     public static MIMCApplication getInstance() {
         return instance;
     }
+
+    private DBHelper mHelper;
+    private SQLiteDatabase mDatabase;
 
     @Override
     public void onCreate() {
@@ -79,6 +92,10 @@ public class MIMCApplication extends Application {
         String rootDir = MMKV.initialize(this);
         LogUtil.e(TAG, "rootDir is: " + rootDir);
 
+        // database
+        mHelper = new DBHelper(this);
+        mDatabase = mHelper.getWritableDatabase();
+
         instance = this;
     }
 
@@ -89,4 +106,75 @@ public class MIMCApplication extends Application {
     public void exit(){
         System.exit(0);
     }
+
+    public boolean insertData(String customName, String sn){
+        if(customName == null || TextUtils.isEmpty(customName) || sn == null || TextUtils.isEmpty(sn)){
+            LogUtil.e(TAG, "param error");
+            return false;
+        }
+
+        LogUtil.e(TAG, "gonna insert data, customName: " + customName + " sn: " + sn);
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.CUSTOM_NAME, customName);
+        values.put(DBHelper.SN, sn);
+        long index = mDatabase.insert(DBHelper.TABLE_NAME, null, values);
+        if(index == -1){
+            LogUtil.e(TAG, "insertData failed!!!");
+            return false;
+        }else {
+            LogUtil.e(TAG, "insertData success!!!");
+            return true;
+        }
+    }
+
+    public boolean deleteData(String customName) {
+        if (customName == null || TextUtils.isEmpty(customName)) {
+            LogUtil.e(TAG, "param error");
+            return false;
+        }
+
+        LogUtil.e(TAG, "gonna delete data, customName: " + customName);
+
+        int count = mDatabase.delete(DBHelper.TABLE_NAME, DBHelper.CUSTOM_NAME + " = ?", new String[]{customName});
+        LogUtil.e(TAG, "delete result: " + count);
+        return true;
+    }
+
+    public boolean updateData(String customName, String sn){
+        if(customName == null || TextUtils.isEmpty(customName) || sn == null || TextUtils.isEmpty(sn)){
+            LogUtil.e(TAG, "param error");
+            return false;
+        }
+
+        LogUtil.e(TAG, "gonna update data, customName: " + customName + " sn: " + sn);
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.CUSTOM_NAME, customName);
+        values.put(DBHelper.SN, sn);
+        int count = mDatabase.update(DBHelper.TABLE_NAME, values, DBHelper.CUSTOM_NAME + " = ?", new String[]{customName});
+        LogUtil.e(TAG, "update result: " + count);
+        return true;
+
+    }
+
+    public List<Contact> queryData(){
+        List<Contact> list = new ArrayList<>();
+        Cursor cursor = mDatabase.rawQuery("select * from table_person", null);
+        if(cursor.moveToFirst()){
+            do {
+                String customName = cursor.getString(cursor.getColumnIndex(DBHelper.CUSTOM_NAME));
+                Log.e(TAG, customName);
+                String sn = cursor.getString(cursor.getColumnIndex(DBHelper.SN));
+                Log.e(TAG, sn);
+                Contact contact = new Contact(customName, sn);
+                list.add(contact);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        if(list.size() == 0){
+            LogUtil.e(TAG, "queryData but nothing found");
+            return null;
+        }
+        return list;
+    }
+
 }

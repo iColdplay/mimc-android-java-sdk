@@ -2,6 +2,7 @@ package com.xiaomi.mimcdemo.ui;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,8 @@ public class HomeActivity extends Activity {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
+    public static final int ACTIVITY_RESULT_SCAN = 10001;
+
     private ActivityHomeBinding binding;
 
     private UserManager userManager;
@@ -54,39 +57,41 @@ public class HomeActivity extends Activity {
 
         uiGoInitializingLayout();
 
-        if(NetWorkUtils.isNetwork(this)){
+        if (NetWorkUtils.isNetwork(this)) {
             uiGoLoginLayout();
-        }else {
+        } else {
             Toast.makeText(this, "未检测到网络, 请连接网络后重试...", Toast.LENGTH_SHORT).show();
-            Thread gonnaFinishThread = new Thread(){
+            Thread gonnaFinishThread = new Thread() {
                 @Override
                 public void run() {
                     super.run();
                     try {
-                        Thread.sleep( 3 * 1000);
+                        Thread.sleep(3 * 1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
 
                     finish();
                 }
-            };gonnaFinishThread.start();
+            };
+            gonnaFinishThread.start();
         }
 
         requestPermissions(new String[]{"android.permission.RECORD_AUDIO",
                 "android.permission.WRITE_EXTERNAL_STORAGE",
                 "android.permission.MODIFY_AUDIO_SETTINGS",
                 "android.permission.READ_PHONE_STATE",
-                "android.permission.READ_PRIVILEGED_PHONE_STATE"}, 0);
+                "android.permission.READ_PRIVILEGED_PHONE_STATE",
+                "android.permission.CAMERA"}, 0);
 
         mmkv = MMKV.defaultMMKV();
         String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "");
         assert name != null;
-        if(name.length() > 0 && !TextUtils.isEmpty(name)){
+        if (name.length() > 0 && !TextUtils.isEmpty(name)) {
             binding.et.setText(name);
             binding.et.requestFocus();
             binding.et.setSelection(binding.et.getText().toString().length());
-        }else {
+        } else {
             binding.et.setText("");
             binding.et.setHint("Please Input ID");
         }
@@ -98,11 +103,11 @@ public class HomeActivity extends Activity {
             }
         });
 
-        mainHandler = new Handler(Looper.myLooper()){
+        mainHandler = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(msg.what == MSG_LOGOUT){
+                if (msg.what == MSG_LOGOUT) {
                     LogUtil.e(TAG, "HomeActivity logout");
                     uiGoLoginLayout();
                 }
@@ -116,23 +121,45 @@ public class HomeActivity extends Activity {
                 doClickQrCodeImage();
             }
         });
+
+        binding.imageScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.e(TAG, "imageScan onClick()");
+                doClickScanImage();
+            }
+        });
     }
 
-    private void doClickQrCodeImage(){
+    private void doClickScanImage() {
+        Intent intent = new Intent(HomeActivity.this, ScanActivity.class);
+        startActivityForResult(intent, ACTIVITY_RESULT_SCAN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ACTIVITY_RESULT_SCAN) {
+            String qrInfo = data.getStringExtra(CustomKeys.KEY_QR_INFO);
+            LogUtil.e(TAG, "qrInfo is: " + qrInfo);
+        }
+    }
+
+    private void doClickQrCodeImage() {
         QRCodeFragment fragment = QRCodeFragment.newInstance();
         fragment.show(getFragmentManager(), QRCodeFragment.TAG);
     }
 
-    private void doLogin(){
-        if(!NetWorkUtils.isNetwork(HomeActivity.this)){
+    private void doLogin() {
+        if (!NetWorkUtils.isNetwork(HomeActivity.this)) {
             Toast.makeText(HomeActivity.this, "未检测到网络, 请稍后重试", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(binding.et.getText().toString().contains("Please Input ID") || TextUtils.isEmpty(binding.et.getText().toString())){
+        if (binding.et.getText().toString().contains("Please Input ID") || TextUtils.isEmpty(binding.et.getText().toString())) {
             Toast.makeText(HomeActivity.this, "请输入有效ID", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(binding.et.getText().toString().length() > 10){
+        if (binding.et.getText().toString().length() > 10) {
             Toast.makeText(HomeActivity.this, "ID过长, 最大长度为10", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -168,14 +195,14 @@ public class HomeActivity extends Activity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void checkIfHaveRecent(){
+    private void checkIfHaveRecent() {
         LogUtil.e(TAG, "checkIfHaveRecent()");
         String recentContact = mmkv.getString(CustomKeys.KEY_RECENT_CONTACT, "");
-        if(recentContact.length() == 0) {
+        if (recentContact.length() == 0) {
             binding.tvRecentName.setText("暂无");
             binding.swipeLayout.setSwipeEnabled(false);
             binding.llSwipeInfo.setBackgroundColor(getColor(R.color.colorPrimaryDark));
-        }else {
+        } else {
             binding.tvRecentName.setText(recentContact);
         }
     }
@@ -189,7 +216,7 @@ public class HomeActivity extends Activity {
     @Override
     public void onBackPressed() {
         LogUtil.e(TAG, "onBackPressed()");
-        if((System.currentTimeMillis()-exitTime) > 2000){
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
             Toast.makeText(HomeActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
             exitTime = System.currentTimeMillis();
         } else {

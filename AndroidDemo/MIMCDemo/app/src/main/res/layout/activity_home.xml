@@ -49,6 +49,7 @@
                             android:textSize="30sp" />
 
                         <ImageView
+                            android:id="@+id/image_qrcode"
                             android:layout_marginStart="230dp"
                             android:layout_marginTop="60dp"
                             android:src="@drawable/qrcode_red"
@@ -88,6 +89,7 @@
                             android:orientation="horizontal">
                             <!--What you want to show-->
                             <ImageView
+                                android:id="@+id/delete"
                                 android:src="@drawable/icon_delete"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"/>

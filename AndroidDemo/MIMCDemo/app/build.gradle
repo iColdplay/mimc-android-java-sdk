@@ -30,9 +30,28 @@ android {
             }
         }
     }
+
+    signingConfigs {
+        sunmi {
+            storeFile file('sunmi.keystore')
+            storePassword "sunmi388"
+            keyAlias "Sunmi"
+            keyPassword "sunmi388"
+        }
+//
+//        sunmi {
+//            storeFile file('l2s.keystroe')
+//            storePassword "sunmi388"
+//            keyAlias "sunmi388"
+//            keyPassword "sunmi388"
+//        }
+    }
+
     buildTypes {
         release {
+            zipAlignEnabled true
             minifyEnabled false
+            signingConfig signingConfigs.sunmi
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

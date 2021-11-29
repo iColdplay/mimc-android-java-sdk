@@ -74,7 +74,9 @@ public class HomeActivity extends Activity {
 
         requestPermissions(new String[]{"android.permission.RECORD_AUDIO",
                 "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.MODIFY_AUDIO_SETTINGS"}, 0);
+                "android.permission.MODIFY_AUDIO_SETTINGS",
+                "android.permission.READ_PHONE_STATE",
+                "android.permission.READ_PRIVILEGED_PHONE_STATE"}, 0);
 
         mmkv = MMKV.defaultMMKV();
         String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "");
@@ -105,6 +107,19 @@ public class HomeActivity extends Activity {
                 }
             }
         };
+
+        binding.imageQrcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.e(TAG, "imageQrcode onClick()");
+                doClickQrCodeImage();
+            }
+        });
+    }
+
+    private void doClickQrCodeImage(){
+        QRCodeFragment fragment = QRCodeFragment.newInstance();
+        fragment.show(getFragmentManager(), QRCodeFragment.TAG);
     }
 
     private void doLogin(){
@@ -171,7 +186,7 @@ public class HomeActivity extends Activity {
         binding.llInitializing.setVisibility(View.GONE);
         binding.llNormal.setVisibility(View.GONE);
         binding.et.requestFocus();
-        binding.et.setSelection(binding.et.getText().toString().length());
+        binding.et.setSelection(binding.et.getText().toString().length()); // 定位光标到最后一个位置
     }
 
     private void uiGoInitializingLayout() {

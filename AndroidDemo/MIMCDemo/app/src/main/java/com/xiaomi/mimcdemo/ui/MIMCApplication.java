@@ -1,11 +1,14 @@
 package com.xiaomi.mimcdemo.ui;
 
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,6 +19,7 @@ import com.xiaomi.mimc.logger.MIMCLog;
 import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.database.DBHelper;
 import com.xiaomi.mimcdemo.utils.LogUtil;
+import com.xiaomi.mimcdemo.utils.SystemPropertiesUtil;
 
 import org.xml.sax.ext.LexicalHandler;
 
@@ -97,6 +101,8 @@ public class MIMCApplication extends Application {
         mDatabase = mHelper.getWritableDatabase();
 
         instance = this;
+
+        LogUtil.e(TAG, "Device SN is " + getSerial());
     }
 
     public static Context getContext() {
@@ -175,6 +181,20 @@ public class MIMCApplication extends Application {
             return null;
         }
         return list;
+    }
+
+    @SuppressLint({"MissingPermission", "HardwareIds"})
+    public String getSerial() {
+//        try {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//                return Build.getSerial();
+//            }
+//            return SystemPropertiesUtil.get("ro.serialno");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
 }

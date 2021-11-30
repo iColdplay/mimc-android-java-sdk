@@ -140,8 +140,13 @@ public class HomeActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ACTIVITY_RESULT_SCAN) {
-            String qrInfo = data.getStringExtra(CustomKeys.KEY_QR_INFO);
-            LogUtil.e(TAG, "qrInfo is: " + qrInfo);
+            if(data != null) {
+                String qrInfo = data.getStringExtra(CustomKeys.KEY_QR_INFO);
+                LogUtil.e(TAG, "qrInfo is: " + qrInfo);
+            }else {
+                LogUtil.e(TAG, "activity result is null");
+                Toast.makeText(HomeActivity.this, "未获取到联系人信息", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

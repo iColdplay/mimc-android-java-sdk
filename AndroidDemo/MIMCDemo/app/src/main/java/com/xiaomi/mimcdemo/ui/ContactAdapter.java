@@ -51,7 +51,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         void bind(final Contact contact) {
             binding.tvCustomName.setText(contact.getCustomName());
             binding.tvSn.setText(contact.getSn());
-            binding.delete.setOnClickListener(new View.OnClickListener() {
+            binding.bottomWrapper.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Message message1 = Message.obtain();

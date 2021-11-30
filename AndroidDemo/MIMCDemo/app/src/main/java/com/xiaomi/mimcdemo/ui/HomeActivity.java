@@ -162,6 +162,15 @@ public class HomeActivity extends Activity {
                 startActivityForResult(intent, ACTIVITY_RESULT_ADD_CONTACT);
             }
         });
+
+        binding.add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.e(TAG, "add Contact by add icon");
+                Intent intent = new Intent(HomeActivity.this, AddContactActivity.class);
+                startActivityForResult(intent, ACTIVITY_RESULT_ADD_CONTACT);
+            }
+        });
     }
 
     private void uiRefreshContact() {

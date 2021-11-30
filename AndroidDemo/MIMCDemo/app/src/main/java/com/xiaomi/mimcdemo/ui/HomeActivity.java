@@ -38,6 +38,7 @@ public class HomeActivity extends Activity {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     public static final int ACTIVITY_RESULT_SCAN = 10001;
+    public static final int ACTIVITY_RESULT_ADD_CONTACT = 10002;
 
     private ActivityHomeBinding binding;
 
@@ -152,6 +153,15 @@ public class HomeActivity extends Activity {
                 doClickScanImage();
             }
         });
+
+        binding.tvNoContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogUtil.e(TAG, "add Contact");
+                Intent intent = new Intent(HomeActivity.this, AddContactActivity.class);
+                startActivityForResult(intent, ACTIVITY_RESULT_ADD_CONTACT);
+            }
+        });
     }
 
     private void uiRefreshContact() {
@@ -210,6 +220,26 @@ public class HomeActivity extends Activity {
             } else {
                 LogUtil.e(TAG, "activity result is null");
                 Toast.makeText(HomeActivity.this, "未获取到联系人信息", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if(requestCode == ACTIVITY_RESULT_ADD_CONTACT){
+            if(data != null){
+                String name = data.getStringExtra(CustomKeys.KEY_USER_NAME);
+                String sn = data.getStringExtra(CustomKeys.KEY_SN);
+
+                LogUtil.e(TAG, "Custom Name: " + name);
+                LogUtil.e(TAG, "SN is: " + sn);
+
+                boolean ret = MIMCApplication.getInstance().insertData(name, sn);
+                if(ret){
+                    Message message1 = Message.obtain();
+                    message1.what = MSG_ADD_CONTACT;
+                    mainHandler.sendMessage(message1);
+                }
+            }else {
+                LogUtil.e(TAG, "add result is null");
+                Toast.makeText(HomeActivity.this, "取消增加联系人", Toast.LENGTH_SHORT).show();
             }
         }
     }

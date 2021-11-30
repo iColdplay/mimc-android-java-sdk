@@ -50,5 +50,11 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             />
+
+        <activity
+            android:name=".ui.AddContactActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            />
     </application>
 </manifest>

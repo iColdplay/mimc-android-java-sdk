@@ -85,4 +85,39 @@
         <item name="android:gravity">center</item>
     </style>
 
+
+    <style name="SettingTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color80PercentText</item>
+    </style>
+
+    <style name="SettingEditView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:textSelectHandle">@color/color20PercentText</item>
+        <item name="android:textSelectHandleLeft">@color/color20PercentText</item>
+        <item name="android:textSelectHandleRight">@color/color20PercentText</item>
+        <item name="android:lines">1</item>
+        <item name="android:background">@null</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color80PercentText</item>
+    </style>
+
+    <style name="Button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:background">@drawable/button_selector_blue</item>
+        <item name="android:textColor">@drawable/button_text_color_blue</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginLeft">@dimen/button_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/button_margin_right</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+    </style>
+
 </resources>

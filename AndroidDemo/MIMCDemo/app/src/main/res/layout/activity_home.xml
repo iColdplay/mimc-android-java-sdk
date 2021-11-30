@@ -148,6 +148,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <TextView
+                            android:layout_marginTop="5dp"
                             android:visibility="visible"
                             android:text="暂无联系人, 点击添加"
                             android:textColor="@color/colorWhite"

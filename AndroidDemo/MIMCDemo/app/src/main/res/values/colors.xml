@@ -39,4 +39,12 @@
     <color name="color5PercentText">#0DFFFFFF</color>
 
     <color name="colorBg">#000000</color>
+
+    <color name="color80PercentPrimary">#CC3C7AFF</color>
+    <color name="color60PercentPrimary">#993C7AFF</color>
+    <color name="color40PercentPrimary">#663C7AFF</color>
+    <color name="color20PercentPrimary">#333C7AFF</color>
+    <color name="color10PercentPrimary">#1A3C7AFF</color>
+    <color name="color5PercentPrimary">#0D3C7AFF</color>
+
 </resources>

@@ -27,6 +27,8 @@
             android:background="@color/dividerColor" />
 
         <Button
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorPrimaryDark"
             android:id="@+id/btn_ok"
             style="@style/DialogPositiveButton"
             android:layout_width="match_parent"

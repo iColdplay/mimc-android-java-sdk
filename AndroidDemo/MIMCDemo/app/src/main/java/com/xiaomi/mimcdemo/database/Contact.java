@@ -13,7 +13,7 @@ public class Contact {
         return customName;
     }
 
-    public void setSn(String sn) {
-        this.sn = sn;
+    public String getSn() {
+        return sn;
     }
 }

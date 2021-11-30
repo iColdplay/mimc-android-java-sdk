@@ -133,7 +133,7 @@ public class MIMCApplication extends Application {
         }
     }
 
-    public boolean deleteData(String customName) {
+    public boolean deleteDataByCustomName(String customName) {
         if (customName == null || TextUtils.isEmpty(customName)) {
             LogUtil.e(TAG, "param error");
             return false;
@@ -142,6 +142,19 @@ public class MIMCApplication extends Application {
         LogUtil.e(TAG, "gonna delete data, customName: " + customName);
 
         int count = mDatabase.delete(DBHelper.TABLE_NAME, DBHelper.CUSTOM_NAME + " = ?", new String[]{customName});
+        LogUtil.e(TAG, "delete result: " + count);
+        return true;
+    }
+
+    public boolean deleteDataBySN(String sn){
+        if (sn == null || TextUtils.isEmpty(sn)) {
+            LogUtil.e(TAG, "param error");
+            return false;
+        }
+
+        LogUtil.e(TAG, "gonna delete data, sn: " + sn);
+
+        int count = mDatabase.delete(DBHelper.TABLE_NAME, DBHelper.SN + " = ?", new String[]{sn});
         LogUtil.e(TAG, "delete result: " + count);
         return true;
     }
@@ -168,9 +181,9 @@ public class MIMCApplication extends Application {
         if(cursor.moveToFirst()){
             do {
                 String customName = cursor.getString(cursor.getColumnIndex(DBHelper.CUSTOM_NAME));
-                Log.e(TAG, customName);
+                LogUtil.e(TAG, customName);
                 String sn = cursor.getString(cursor.getColumnIndex(DBHelper.SN));
-                Log.e(TAG, sn);
+                LogUtil.e(TAG, sn);
                 Contact contact = new Contact(customName, sn);
                 list.add(contact);
             } while (cursor.moveToNext());

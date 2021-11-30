@@ -132,7 +132,6 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
                     sb.append(sym.getResult());
                 }
                 if (!TextUtils.isEmpty(sb.toString())) {
-                    LogUtil.e(TAG, "scan result: " + sb.toString());
                     Intent result = new Intent();
                     result.putExtra(CustomKeys.KEY_QR_INFO, sb.toString());
                     setResult(HomeActivity.ACTIVITY_RESULT_SCAN, result);

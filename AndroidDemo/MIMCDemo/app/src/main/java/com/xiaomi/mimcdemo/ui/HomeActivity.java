@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +27,11 @@ import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.common.CustomKeys;
 import com.xiaomi.mimcdemo.common.NetWorkUtils;
 import com.xiaomi.mimcdemo.common.UserManager;
+import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.ActivityHomeBinding;
 import com.xiaomi.mimcdemo.utils.LogUtil;
+
+import java.util.List;
 
 public class HomeActivity extends Activity {
 
@@ -45,6 +49,10 @@ public class HomeActivity extends Activity {
 
     public static Handler mainHandler;
     public static final int MSG_LOGOUT = 1001;
+    public static final int MSG_ADD_CONTACT = 1002;
+    public static final int MSG_DELETE_CONTACT = 1003;
+
+    private ContactAdapter contactAdapter;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -111,6 +119,21 @@ public class HomeActivity extends Activity {
                     LogUtil.e(TAG, "HomeActivity logout");
                     uiGoLoginLayout();
                 }
+
+                if (msg.what == MSG_ADD_CONTACT) {
+                    LogUtil.e(TAG, "HomeActivity add contact");
+                    uiRefreshContact();
+                }
+
+                if(msg.what == MSG_DELETE_CONTACT){
+                    LogUtil.e(TAG, "HomeActivity delete contact");
+                    Bundle data = msg.getData();
+                    boolean ret = MIMCApplication.getInstance().deleteDataBySN(data.getString(CustomKeys.KEY_SN));
+                    if(ret){
+                        Toast.makeText(HomeActivity.this, "删除联系人成功", Toast.LENGTH_SHORT).show();
+                    }
+                    uiRefreshContact();
+                }
             }
         };
 
@@ -131,6 +154,29 @@ public class HomeActivity extends Activity {
         });
     }
 
+    private void uiRefreshContact() {
+        LogUtil.e(TAG, "now ui refresh contact");
+
+        // 获取所有的联系人信息
+        List<Contact> contacts = MIMCApplication.getInstance().queryData();
+        if (contacts == null || contacts.size() == 0) {
+            LogUtil.e(TAG, "no contact");
+            binding.tvNoContact.setVisibility(View.VISIBLE);
+            binding.rvContactList.setVisibility(View.GONE);
+            return;
+        }
+
+        contactAdapter = new ContactAdapter(contacts);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(HomeActivity.this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.rvContactList.setLayoutManager(linearLayoutManager);
+        binding.rvContactList.setAdapter(contactAdapter);
+        binding.tvNoContact.setVisibility(View.GONE);
+        binding.rvContactList.setVisibility(View.VISIBLE);
+
+        binding.llContactList.invalidate();
+    }
+
     private void doClickScanImage() {
         Intent intent = new Intent(HomeActivity.this, ScanActivity.class);
         startActivityForResult(intent, ACTIVITY_RESULT_SCAN);
@@ -140,10 +186,28 @@ public class HomeActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ACTIVITY_RESULT_SCAN) {
-            if(data != null) {
+            if (data != null) {
                 String qrInfo = data.getStringExtra(CustomKeys.KEY_QR_INFO);
                 LogUtil.e(TAG, "qrInfo is: " + qrInfo);
-            }else {
+                String sn = qrInfo.substring(0, 16);
+                String customName = qrInfo.replaceAll(sn, "");
+                LogUtil.e(TAG, "SN is: " + sn);
+                LogUtil.e(TAG, "Custom Name: " + customName);
+
+                if(sn.contains(MIMCApplication.getInstance().getSerial())){
+                    LogUtil.e(TAG, "detect it's own id, refuse!");
+                    Toast.makeText(HomeActivity.this, "无法添加本机为联系人", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                boolean result = MIMCApplication.getInstance().insertData(customName, sn);
+                if (result) {
+                    Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
+                    Message message1 = Message.obtain();
+                    message1.what = MSG_ADD_CONTACT;
+                    mainHandler.sendMessage(message1);
+                }
+            } else {
                 LogUtil.e(TAG, "activity result is null");
                 Toast.makeText(HomeActivity.this, "未获取到联系人信息", Toast.LENGTH_SHORT).show();
             }
@@ -197,6 +261,7 @@ public class HomeActivity extends Activity {
         super.onResume();
         LogUtil.e(TAG, "onResume()");
         checkIfHaveRecent();
+        uiRefreshContact();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

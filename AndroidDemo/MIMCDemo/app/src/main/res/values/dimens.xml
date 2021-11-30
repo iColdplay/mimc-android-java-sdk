@@ -32,4 +32,11 @@
     <dimen name="dialog_btn_height">52dp</dimen>
 
     <dimen name="divider_width">0.5dp</dimen>
+
+    <!-- list item-->
+    <dimen name="list_item_padding_left">12dp</dimen>
+    <dimen name="list_item_padding_right">12dp</dimen>
+    <dimen name="list_item_name_size">18sp</dimen>
+    <dimen name="list_item_content_size">18sp</dimen>
+
 </resources>

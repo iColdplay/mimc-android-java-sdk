@@ -39,7 +39,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/dialog_title_size</item>
-        <item name="android:textColor">@color/colorDialogText</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="android:layout_marginTop">@dimen/dialog_margin</item>
         <item name="android:paddingStart">@dimen/dialog_margin</item>
         <item name="android:paddingEnd">@dimen/dialog_margin</item>
@@ -71,16 +72,16 @@
 
     <style name="DialogNegativeButton">
         <item name="android:layout_height">@dimen/dialog_btn_height</item>
-        <item name="android:background">@drawable/bg_selector_dialog_negative_btn</item>
-        <item name="android:textColor">@color/selector_dialog_btn_color</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="android:textSize">@dimen/dialog_btn_size</item>
         <item name="android:gravity">center</item>
     </style>
 
     <style name="DialogPositiveButton">
         <item name="android:layout_height">@dimen/dialog_btn_height</item>
-        <item name="android:background">@drawable/bg_selector_dialog_positive_btn</item>
-        <item name="android:textColor">@color/selector_dialog_btn_color</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="android:textSize">@dimen/dialog_btn_size</item>
         <item name="android:gravity">center</item>
     </style>

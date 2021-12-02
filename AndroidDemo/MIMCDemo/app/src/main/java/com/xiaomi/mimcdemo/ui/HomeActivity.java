@@ -21,6 +21,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -236,6 +238,9 @@ public class HomeActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogUtil.e(TAG, "onCreate()");
+
+        setNavigationBarColor(this);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home);
 
         audioStuffPrepare();
@@ -913,6 +918,15 @@ public class HomeActivity extends Activity {
                     Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /***
+     * 修改NavigationBar背景颜色 可自定义颜色
+     * */
+    public static void setNavigationBarColor(Activity activity){
+        Window window = activity.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setNavigationBarColor(activity.getResources().getColor(R.color.colorPrimaryDark));
     }
 
 }

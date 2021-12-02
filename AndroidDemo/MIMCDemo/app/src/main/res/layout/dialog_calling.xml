@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_shape_dialog">
+
+        <ImageView
+            android:src="@drawable/voice_red"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:layout_width="250dp"
+            android:layout_height="50dp" />
+
+        <View
+            android:id="@+id/v_bottom_divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_width"
+            android:layout_marginTop="24dp"
+            android:background="@color/dividerColor" />
+
+        <Button
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorPrimaryDark"
+            android:id="@+id/btn_close"
+            style="@style/DialogPositiveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="中止发送" />
+
+    </LinearLayout>
+</layout>

@@ -1,6 +1,9 @@
 package com.xiaomi.mimcdemo.common;
 
+import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
+
 import com.alibaba.fastjson.JSON;
 import com.xiaomi.mimc.MIMCGroupMessage;
 import com.xiaomi.mimc.MIMCMessage;
@@ -20,9 +23,13 @@ import com.xiaomi.mimc.data.RtsDataType;
 import com.xiaomi.mimcdemo.bean.ChatMsg;
 import com.xiaomi.mimcdemo.bean.Msg;
 import com.xiaomi.mimcdemo.listener.OnCallStateListener;
+import com.xiaomi.mimcdemo.ui.HomeActivity;
 import com.xiaomi.mimcdemo.ui.MIMCApplication;
 import com.xiaomi.mimcdemo.ui.VoiceCallActivity;
+import com.xiaomi.mimcdemo.utils.LogUtil;
+
 import okhttp3.*;
+
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -32,7 +39,7 @@ public class UserManager {
     /**
      * appId/appKey/appSecret，小米开放平台(https://dev.mi.com/console/appservice/mimc.html)申请
      * 其中appKey和appSecret不可存储于APP端，应存储于APP自己的服务器，以防泄漏。
-     *
+     * <p>
      * 此处appId/appKey/appSec为小米MimcDemo所有，会在一定时间后失效，建议开发者自行申请
      **/
     // online
@@ -62,7 +69,7 @@ public class UserManager {
     public static int STATE_REJECT = 2;
     public static int STATE_INTERRUPT = 3;
     private volatile int answer = STATE_TIMEOUT;
-    private Object lock = new Object();
+    private final Object lock = new Object();
     private static final String TAG = "UserManager";
 
     // 设置消息监听
@@ -76,28 +83,51 @@ public class UserManager {
 
     public interface OnHandleMIMCMsgListener {
         void onHandleMessage(ChatMsg chatMsg);
+
         void onHandleGroupMessage(ChatMsg chatMsg);
+
         void onHandleStatusChanged(MIMCConstant.OnlineStatus status);
+
         void onHandleServerAck(MIMCServerAck serverAck);
+
         void onHandleOnlineMessageAck(MIMCOnlineMessageAck onlineMessageAck);
+
         void onHandleCreateGroup(String json, boolean isSuccess);
+
         void onHandleQueryGroupInfo(String json, boolean isSuccess);
+
         void onHandleQueryGroupsOfAccount(String json, boolean isSuccess);
+
         void onHandleJoinGroup(String json, boolean isSuccess);
+
         void onHandleQuitGroup(String json, boolean isSuccess);
+
         void onHandleKickGroup(String json, boolean isSuccess);
+
         void onHandleUpdateGroup(String json, boolean isSuccess);
+
         void onHandleDismissGroup(String json, boolean isSuccess);
+
         void onHandlePullP2PHistory(String json, boolean isSuccess);
+
         void onHandlePullP2THistory(String json, boolean isSuccess);
+
         void onHandleSendMessageTimeout(MIMCMessage message);
+
         void onHandleSendGroupMessageTimeout(MIMCGroupMessage groupMessage);
+
         void onHandleJoinUnlimitedGroup(long topicId, int code, String errMsg);
+
         void onHandleQuitUnlimitedGroup(long topicId, int code, String errMsg);
+
         void onHandleDismissUnlimitedGroup(String json, boolean isSuccess);
+
         void onHandleQueryUnlimitedGroupMembers(String json, boolean isSuccess);
+
         void onHandleQueryUnlimitedGroups(String json, boolean isSuccess);
+
         void onHandleQueryUnlimitedGroupOnlineUsers(String json, boolean isSuccess);
+
         void onPullNotification();
     }
 
@@ -107,6 +137,7 @@ public class UserManager {
 
     /**
      * 获取用户帐号
+     *
      * @return 成功返回用户帐号，失败返回""
      */
     public String getAccount() {
@@ -115,6 +146,7 @@ public class UserManager {
 
     /**
      * 获取用户在线状态
+     *
      * @return STATUS_LOGIN_SUCCESS 在线，STATUS_LOGOUT 下线，STATUS_LOGIN_FAIL 登录失败
      */
     public MIMCConstant.OnlineStatus getStatus() {
@@ -171,7 +203,8 @@ public class UserManager {
 
     /**
      * 获取用户
-     * @return  返回已创建用户
+     *
+     * @return 返回已创建用户
      */
     public MIMCUser getMIMCUser() {
         return mimcUser;
@@ -179,10 +212,11 @@ public class UserManager {
 
     /**
      * 创建用户
+     *
      * @param appAccount APP自己维护的用户帐号，不能为null
      * @return 返回新创建的用户
      */
-    public MIMCUser newMIMCUser(String appAccount){
+    public MIMCUser newMIMCUser(String appAccount) {
         if (appAccount == null || appAccount.isEmpty()) return null;
 
         // 若是新用户，先释放老用户资源
@@ -210,7 +244,7 @@ public class UserManager {
         @Override
         public void handleCreateUnlimitedGroup(long topicId, String topicName, int code, String desc, Object obj) {
             Log.i(TAG, String.format("handleCreateUnlimitedGroup topicId:%d topicName:%s code:%d errMsg:%s"
-                , topicId, topicName, code, desc));
+                    , topicId, topicName, code, desc));
         }
 
         @Override
@@ -237,11 +271,24 @@ public class UserManager {
     class RTSHandler implements MIMCRtsCallHandler {
         @Override
         public LaunchedResponse onLaunched(String fromAccount, String fromResource, long callId, byte[] appContent) {
-            synchronized(lock) {
-                Log.i(TAG, String.format("新会话请求来了 callId:%d", callId));
+            synchronized (lock) {
+
+                LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 callId:      " + callId);
+                LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 fromAccount: " + fromAccount);
+                LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 fromResource:" + fromResource);
+
                 String callType = new String(appContent);
                 if (callType.equalsIgnoreCase("AUDIO")) {
-                    VoiceCallActivity.actionStartActivity(MIMCApplication.getContext(), fromAccount, callId);
+//                    VoiceCallActivity.actionStartActivity(MIMCApplication.getContext(), fromAccount, callId);
+
+                    Message message1 = Message.obtain();
+                    message1.what = HomeActivity.MSG_CALL_INCOMING;
+                    Bundle data = new Bundle();
+                    data.putString(CustomKeys.KEY_INCOMING_CALL_ACCOUNT, fromAccount);
+                    data.putLong(CustomKeys.KEY_INCOMING_CALL_ID, callId);
+                    message1.setData(data);
+                    HomeActivity.callHandler.sendMessage(message1);
+
                 } else if (callType.equalsIgnoreCase("VIDEO")) {
 
                 }
@@ -280,7 +327,8 @@ public class UserManager {
         @Override
         public void onAnswered(long callId, boolean accepted, String errMsg) {
             Log.i(TAG, "会话接通 callId:" + callId + " accepted:" + accepted + " errMsg:" + errMsg);
-            if (onCallStateListener != null) onCallStateListener.onAnswered(callId, accepted, errMsg);
+            if (onCallStateListener != null)
+                onCallStateListener.onAnswered(callId, accepted, errMsg);
         }
 
         @Override
@@ -419,6 +467,7 @@ public class UserManager {
 
         /**
          * 接收单聊超时消息
+         *
          * @param message 单聊消息类
          */
         @Override
@@ -427,7 +476,8 @@ public class UserManager {
         }
 
         /**
-         *接收发送群聊超时消息
+         * 接收发送群聊超时消息
+         *
          * @param groupMessage 群聊消息类
          */
         @Override
@@ -464,8 +514,8 @@ public class UserManager {
                     addGroupMsg(chatMsg);
                 }
             }
-			
-			return true;
+
+            return true;
         }
 
         @Override
@@ -516,14 +566,14 @@ public class UserManager {
             url = domain + "api/account/token";
             String appAccount = getAccount();
             String json = "{\"appId\":" + appId + ",\"appKey\":\"" + appKey + "\",\"appSecret\":\"" +
-                appSecret + "\",\"appAccount\":\"" + appAccount + "\",\"regionKey\":\"" + regionKey + "\"}";
+                    appSecret + "\",\"appAccount\":\"" + appAccount + "\",\"regionKey\":\"" + regionKey + "\"}";
             MediaType JSON = MediaType.parse("application/json;charset=utf-8");
             OkHttpClient client = new OkHttpClient();
             Request request = new Request
-                .Builder()
-                .url(url)
-                .post(RequestBody.create(JSON, json))
-                .build();
+                    .Builder()
+                    .url(url)
+                    .post(RequestBody.create(JSON, json))
+                    .build();
             Call call = client.newCall(request);
             JSONObject data = null;
             try {
@@ -566,8 +616,9 @@ public class UserManager {
 
     /**
      * 创建群
+     *
      * @param groupName 群名
-     * @param users 群成员，多个成员之间用英文逗号(,)分隔
+     * @param users     群成员，多个成员之间用英文逗号(,)分隔
      */
     public void createGroup(final String groupName, final String users) {
         url = domain + "api/topic/" + appId;
@@ -602,6 +653,7 @@ public class UserManager {
 
     /**
      * 查询指定群信息
+     *
      * @param groupId 群ID
      */
     public void queryGroupInfo(final String groupId) {
@@ -667,8 +719,9 @@ public class UserManager {
 
     /**
      * 邀请用户加入群
+     *
      * @param groupId 群ID
-     * @param users 加入成员，多个成员之间用英文逗号(,)分隔
+     * @param users   加入成员，多个成员之间用英文逗号(,)分隔
      */
     public void joinGroup(final String groupId, final String users) {
         url = domain + "api/topic/" + appId + "/" + groupId + "/accounts";
@@ -703,6 +756,7 @@ public class UserManager {
 
     /**
      * 非群主成员退群
+     *
      * @param groupId 群ID
      */
     public void quitGroup(final String groupId) {
@@ -736,8 +790,9 @@ public class UserManager {
 
     /**
      * 群主踢成员出群
+     *
      * @param groupId 群ID
-     * @param users 群成员，多个成员之间用英文逗号(,)分隔
+     * @param users   群成员，多个成员之间用英文逗号(,)分隔
      */
     public void kickGroup(final String groupId, final String users) {
         url = domain + "api/topic/" + appId + "/" + groupId + "/accounts?accounts=" + users;
@@ -770,21 +825,24 @@ public class UserManager {
 
     /**
      * 群主更新群信息
-     * @param groupId 群ID
-     * @param newOwnerAccount 若为群成员则指派新的群主
-     * @param newGroupName 群名
+     *
+     * @param groupId          群ID
+     * @param newOwnerAccount  若为群成员则指派新的群主
+     * @param newGroupName     群名
      * @param newGroupBulletin 群公告
      */
-    public void updateGroup(final String groupId, final String newOwnerAccount,  final String newGroupName, final String newGroupBulletin) {
+    public void updateGroup(final String groupId, final String newOwnerAccount, final String newGroupName, final String newGroupBulletin) {
         url = domain + "api/topic/" + appId + "/" + groupId;
         // 注意：不指定的信息则不更新（键值对一起不指定）
         String json = "{";
         if (!newOwnerAccount.isEmpty()) {
             json += "\"ownerAccount\":\"" + newOwnerAccount + "\"";
-        } if (!newGroupName.isEmpty()) {
-            json += "\"topicName\":\""+ newGroupName + "\"";
-        } if (!newGroupBulletin.isEmpty()) {
-            json += "\"bulletin\":\""+ newGroupBulletin + "\"";
+        }
+        if (!newGroupName.isEmpty()) {
+            json += "\"topicName\":\"" + newGroupName + "\"";
+        }
+        if (!newGroupBulletin.isEmpty()) {
+            json += "\"bulletin\":\"" + newGroupBulletin + "\"";
         }
         json += "}";
         MediaType JSON = MediaType.parse("application/json");
@@ -816,7 +874,8 @@ public class UserManager {
     }
 
     /**
-     *群主销毁群
+     * 群主销毁群
+     *
      * @param groupId 群ID
      */
     public void dismissGroup(final String groupId) {
@@ -850,11 +909,12 @@ public class UserManager {
 
     /**
      * 拉取单聊消息记录
-     * @param toAccount 接收方帐号
+     *
+     * @param toAccount   接收方帐号
      * @param fromAccount 发送方帐号
      * @param utcFromTime 开始时间
-     * @param utcToTime 结束时间
-     * 注意：utcFromTime和utcToTime的时间间隔不能超过24小时，查询状态为[utcFromTime,utcToTime)，单位毫秒，UTC时间
+     * @param utcToTime   结束时间
+     *                    注意：utcFromTime和utcToTime的时间间隔不能超过24小时，查询状态为[utcFromTime,utcToTime)，单位毫秒，UTC时间
      */
     public void pullP2PHistory(String toAccount, String fromAccount, String utcFromTime, String utcToTime) {
         url = domain + "api/msg/p2p/query/";
@@ -892,11 +952,12 @@ public class UserManager {
 
     /**
      * 拉取群聊消息记录
-     * @param account 拉取者帐号
-     * @param topicId 群ID
+     *
+     * @param account     拉取者帐号
+     * @param topicId     群ID
      * @param utcFromTime 开始时间
-     * @param utcToTime 结束时间
-     * 注意：utcFromTime和utcToTime的时间间隔不能超过24小时，查询状态为[utcFromTime,utcToTime)，单位毫秒，UTC时间
+     * @param utcToTime   结束时间
+     *                    注意：utcFromTime和utcToTime的时间间隔不能超过24小时，查询状态为[utcFromTime,utcToTime)，单位毫秒，UTC时间
      */
     public void pullP2THistory(String account, String topicId, String utcFromTime, String utcToTime) {
         url = domain + "api/msg/p2t/query/";
@@ -933,18 +994,19 @@ public class UserManager {
 
     /**
      * 查询无限大群成员
+     *
      * @param topicId 群ID
      */
     public void queryUnlimitedGroupMembers(long topicId) {
         url = domain + "/api/uctopic/userlist";
         OkHttpClient client = new OkHttpClient();
         final Request request = new Request
-            .Builder()
-            .url(url)
-            .addHeader("token", mimcUser.getToken())
-            .addHeader("topicId", String.valueOf(topicId))
-            .get()
-            .build();
+                .Builder()
+                .url(url)
+                .addHeader("token", mimcUser.getToken())
+                .addHeader("topicId", String.valueOf(topicId))
+                .get()
+                .build();
         try {
             Call call = client.newCall(request);
             call.enqueue(new Callback() {
@@ -975,11 +1037,11 @@ public class UserManager {
         String url = domain + "/api/uctopic/topics";
         OkHttpClient client = new OkHttpClient();
         final Request request = new Request
-            .Builder()
-            .url(url)
-            .addHeader("token", mimcUser.getToken())
-            .get()
-            .build();
+                .Builder()
+                .url(url)
+                .addHeader("token", mimcUser.getToken())
+                .get()
+                .build();
         try {
             Call call = client.newCall(request);
             call.enqueue(new Callback() {
@@ -1005,18 +1067,19 @@ public class UserManager {
 
     /**
      * 查询无限大群在线用户数
+     *
      * @param topicId
      */
     public void queryUnlimitedGroupOnlineUsers(long topicId) {
         url = domain + "/api/uctopic/onlineinfo";
         OkHttpClient client = new OkHttpClient();
         final Request request = new Request
-            .Builder()
-            .url(url)
-            .addHeader("token", mimcUser.getToken())
-            .addHeader("topicId", String.valueOf(topicId))
-            .get()
-            .build();
+                .Builder()
+                .url(url)
+                .addHeader("token", mimcUser.getToken())
+                .addHeader("topicId", String.valueOf(topicId))
+                .get()
+                .build();
         try {
             Call call = client.newCall(request);
             call.enqueue(new Callback() {

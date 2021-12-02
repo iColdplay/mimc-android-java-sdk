@@ -1,14 +1,21 @@
 package com.xiaomi.mimcdemo.av;
 
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothHeadset;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.audiofx.AcousticEchoCanceler;
+import android.media.audiofx.LoudnessEnhancer;
+import android.media.audiofx.NoiseSuppressor;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
+
+import java.lang.reflect.Method;
 
 import static android.media.AudioTrack.*;
 import static com.xiaomi.mimcdemo.common.Constant.*;
@@ -43,7 +50,7 @@ public class AudioPlayer implements Player {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private boolean startPlayer(int streamType, int sampleRateInHz, int channelConfig, int audioFormat) {
+    private synchronized boolean startPlayer(int streamType, int sampleRateInHz, int channelConfig, int audioFormat) {
         if (isPlayStarted) {
             Log.w(TAG, "Audio player started.");
             return false;
@@ -54,6 +61,18 @@ public class AudioPlayer implements Player {
             Log.w(TAG, "Invalid parameters.");
             return false;
         }
+
+        // 使用新的参数创建audioTrack
+//        int m_out_buf_size = AudioTrack.getMinBufferSize(44100,
+//                AudioFormat.CHANNEL_OUT_MONO,
+//                AudioFormat.ENCODING_PCM_16BIT);
+//
+//        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000,
+//                AudioFormat.CHANNEL_OUT_MONO,
+//                AudioFormat.ENCODING_PCM_16BIT,
+//                m_out_buf_size,
+//                AudioTrack.MODE_STREAM);
+//        audioTrack.setStereoVolume(1f, 1f);
 
         audioTrack = new AudioTrack((new AudioAttributes.Builder())
             .setLegacyStreamType(streamType)
@@ -69,6 +88,17 @@ public class AudioPlayer implements Player {
             Log.w(TAG, "AudioTrack initialize fail.");
             return false;
         }
+
+//        // try to make more volume in play flow() start
+//        LoudnessEnhancer enhancer = new LoudnessEnhancer(audioTrack.getAudioSessionId());
+//        NoiseSuppressor.create(audioTrack.getAudioSessionId());
+//        AcousticEchoCanceler.create(audioTrack.getAudioSessionId());
+//
+//        enhancer.setTargetGain(10);
+//        enhancer.setEnabled(true);
+//        // try to make more volume in play flow() end
+
+
         isPlayStarted = true;
         audioTrack.play();
         setAudioMode(defaultAudioMode);
@@ -98,6 +128,7 @@ public class AudioPlayer implements Player {
         }
 
         int result = audioTrack.write(audioData, offsetInBytes, sizeInBytes);
+
         if (result == ERROR_INVALID_OPERATION) {
             Log.w(TAG, "The track isn't properly initialized.");
         } else if (result == ERROR_BAD_VALUE) {
@@ -111,14 +142,27 @@ public class AudioPlayer implements Player {
 
         return true;
     }
-
     private void setAudioMode(int mode) {
         AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        if (mode == AudioManager.MODE_NORMAL) {
-            audioManager.setSpeakerphoneOn(true);
-        } else if (mode == AudioManager.MODE_IN_COMMUNICATION) {
-            audioManager.setSpeakerphoneOn(false);
-        }
-        audioManager.setMode(mode);
+//        if (mode == AudioManager.MODE_NORMAL) {
+//            audioManager.setSpeakerphoneOn(false);
+//        } else if (mode == AudioManager.MODE_IN_COMMUNICATION || mode == AudioManager.MODE_IN_CALL) {
+//            if(isBluetoothHeadsetConnected() || audioManager.isWiredHeadsetOn()) {
+//                audioManager.setSpeakerphoneOn(false);
+//            } else {
+//                audioManager.setSpeakerphoneOn(true);
+//            }
+//        }
+//        audioManager.setMode(mode);
+
+        audioManager.setSpeakerphoneOn(true); //无论如何 打开外放
+        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
     }
+
+    public static boolean isBluetoothHeadsetConnected() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        return mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()
+                && mBluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED;
+    }
+
 }

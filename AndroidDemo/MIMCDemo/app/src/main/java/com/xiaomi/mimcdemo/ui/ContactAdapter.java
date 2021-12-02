@@ -62,6 +62,20 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     HomeActivity.mainHandler.sendMessage(message1);
                 }
             });
+            binding.llSwipeInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Message message1 = Message.obtain();
+                    message1.what = HomeActivity.MSG_CALL_GOING_OUT;
+                    Bundle data = new Bundle();
+                    data.putString(CustomKeys.KEY_GOING_OUT_NAME, contact.getCustomName());
+                    data.putString(CustomKeys.KEY_GOING_OUT_ID, contact.getSn());
+                    message1.setData(data);
+                    HomeActivity.callHandler.sendMessage(message1);
+
+                }
+            });
             binding.executePendingBindings();
         }
     }

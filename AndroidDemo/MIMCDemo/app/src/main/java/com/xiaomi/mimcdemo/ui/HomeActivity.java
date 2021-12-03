@@ -217,6 +217,7 @@ public class HomeActivity extends Activity {
     public static final int MSG_FINISH = 2002;
     public static final int MSG_CALL_GOING_OUT = 2003;
     public static final int MSG_CALL_CLOSE_BY_HOST = 2004;
+    public static final int MSG_CALL_CLOSE_BY_CLIENT = 2005;
     public static Handler callHandler;
     private volatile long callingOutID = -1;
 
@@ -373,6 +374,8 @@ public class HomeActivity extends Activity {
 
                     callingOutID = callId;
 
+                    showIncomingCallDialog();
+
                     UserManager.getInstance().answerCall();
 //                    startRecording();
                     audioPlayer.start();
@@ -397,6 +400,9 @@ public class HomeActivity extends Activity {
                     if (audioRecorder != null) {
                         audioRecorder.stop();
                     }
+
+                    IncomingCallDialog.getInstance().performClickCloseButton();
+                    CallingDialog.getInstance().performClickCloseButton();
                     LogUtil.e(TAG, "----------MSG_FINISH handle end  ----------");
                 }
 
@@ -432,8 +438,28 @@ public class HomeActivity extends Activity {
                     }
                     LogUtil.e(TAG, "----------MSG_CALL_CLOSE_BY_HOST handle end  ----------");
                 }
+
+                if (msg.what == MSG_CALL_CLOSE_BY_CLIENT) {
+                    LogUtil.e(TAG, "----------MSG_CALL_CLOSE_BY_CLIENT handle start----------");
+
+                    UserManager.getInstance().closeCall(callingOutID);
+                    callingOutID = -1;
+                    Toast.makeText(HomeActivity.this, "通讯结束 ", Toast.LENGTH_SHORT).show();
+
+                    if (audioPlayer != null) {
+                        audioPlayer.stop();
+                        nowReceivingVoice = false;
+                    }
+                    if (audioRecorder != null) {
+                        audioRecorder.stop();
+                    }
+
+                    LogUtil.e(TAG, "----------MSG_CALL_CLOSE_BY_CLIENT handle start----------");
+                }
             }
         };
+
+        binding.tvDeviceId.setText(MIMCApplication.getInstance().getSerial());
     }
 
     private void uiRefreshContact() {
@@ -525,6 +551,11 @@ public class HomeActivity extends Activity {
     private void doClickOnRecyclerView() {
         CallingDialog fragment = CallingDialog.getInstance();
         fragment.show(getFragmentManager(), CallingDialog.TAG);
+    }
+
+    private void showIncomingCallDialog() {
+        IncomingCallDialog fragment = IncomingCallDialog.getInstance();
+        fragment.show(getFragmentManager(), IncomingCallDialog.TAG);
     }
 
     private void doLogin() {
@@ -923,7 +954,7 @@ public class HomeActivity extends Activity {
     /***
      * 修改NavigationBar背景颜色 可自定义颜色
      * */
-    public static void setNavigationBarColor(Activity activity){
+    public static void setNavigationBarColor(Activity activity) {
         Window window = activity.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setNavigationBarColor(activity.getResources().getColor(R.color.colorPrimaryDark));

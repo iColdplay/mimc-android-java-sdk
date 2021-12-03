@@ -42,7 +42,6 @@
                         android:id="@+id/edt_name"
                         style="@style/SettingEditView"
                         android:maxLength="8"
-                        android:inputType="number"
                         android:layout_marginLeft="20dp"
                         android:textColor="@color/colorText" />
 

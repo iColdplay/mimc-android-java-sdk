@@ -8,18 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xiaomi.mimcdemo.databinding.DialogCallingBinding;
+import com.xiaomi.mimcdemo.databinding.DialogIncomingCallBinding;
 
-public class CallingDialog extends BaseDialogFragment {
+public class IncomingCallDialog extends BaseDialogFragment{
 
-    public static final String TAG = CallingDialog.class.getSimpleName();
+    public static final String TAG = IncomingCallDialog.class.getSimpleName();
 
-    private DialogCallingBinding binding;
+    private DialogIncomingCallBinding binding;
 
-    private static CallingDialog dialog;
+    private static IncomingCallDialog dialog;
 
-    public static CallingDialog getInstance() {
-        if (dialog == null) {
-            dialog = new CallingDialog();
+    public static IncomingCallDialog getInstance(){
+        if(dialog == null){
+            dialog = new IncomingCallDialog();
         }
         return dialog;
     }
@@ -28,7 +29,7 @@ public class CallingDialog extends BaseDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (binding == null) {
-            binding = DialogCallingBinding.inflate(inflater, container, false);
+            binding = DialogIncomingCallBinding.inflate(inflater, container, false);
             binding.btnClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -43,18 +44,18 @@ public class CallingDialog extends BaseDialogFragment {
         dismiss();
         // tell HomeActivity call is over
         Message message1 = Message.obtain();
-        message1.what = HomeActivity.MSG_CALL_CLOSE_BY_HOST;
+        message1.what = HomeActivity.MSG_CALL_CLOSE_BY_CLIENT;
         HomeActivity.callHandler.sendMessage(message1);
 
         binding = null;
     }
 
+
     public void performClickCloseButton(){
-        if(binding == null){
-            return;
+        if(binding != null) {
+            binding.btnClose.performClick();
+            binding = null;
         }
-        binding.btnClose.performClick();
-        binding = null;
     }
 
 }

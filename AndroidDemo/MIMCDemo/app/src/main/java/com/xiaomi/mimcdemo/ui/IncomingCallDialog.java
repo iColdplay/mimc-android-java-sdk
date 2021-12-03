@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.databinding.DialogCallingBinding;
 import com.xiaomi.mimcdemo.databinding.DialogIncomingCallBinding;
 
@@ -30,6 +31,7 @@ public class IncomingCallDialog extends BaseDialogFragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (binding == null) {
             binding = DialogIncomingCallBinding.inflate(inflater, container, false);
+            binding.tvCallerName.setText(HomeActivity.callerName);
             binding.btnClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

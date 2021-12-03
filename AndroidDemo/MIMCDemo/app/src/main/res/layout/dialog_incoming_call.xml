@@ -10,6 +10,17 @@
         android:layout_gravity="center"
         android:background="@drawable/bg_shape_dialog">
 
+        <TextView
+            android:id="@+id/tv_caller_name"
+            android:textSize="16sp"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/colorWhite"
+            android:gravity="center"
+            android:text="XXXXXXXXXX"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <ImageView
             android:src="@drawable/incoming_voice_red"
             android:layout_marginTop="24dp"

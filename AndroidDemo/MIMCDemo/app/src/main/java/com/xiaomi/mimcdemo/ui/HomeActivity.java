@@ -234,6 +234,8 @@ public class HomeActivity extends Activity {
 
     private volatile boolean nowReceivingVoice = false; //用来控制录制网络数据
 
+    public static String callerName = "未知";
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -373,6 +375,8 @@ public class HomeActivity extends Activity {
                     LogUtil.e(TAG, "we are gonna directly answer the call");
 
                     callingOutID = callId;
+                    assert fromAccount != null;
+                    callerName = fromAccount.substring(16);
 
                     showIncomingCallDialog();
 

@@ -83,6 +83,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:visibility="gone"
                         android:layout_marginTop="20dp"
                         android:layout_below="@id/ll_user_name"
                         android:text="最近联系人"
@@ -95,6 +96,7 @@
                         android:textSize="20sp" />
 
                     <com.daimajia.swipe.SwipeLayout
+                        android:visibility="invisible"
                         android:id="@+id/swipe_layout"
                         android:layout_marginStart="25dp"
                         android:layout_marginEnd="25dp"

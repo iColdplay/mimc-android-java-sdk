@@ -231,7 +231,7 @@ public class HomeActivity extends Activity {
     private BlockingQueue<AV.MIMCRtsPacket> audioDecodeQueue;
     private AudioDecodeThread audioDecodeThread;
 
-    private volatile boolean nowReceivingVoice = false;
+    private volatile boolean nowReceivingVoice = false; //用来控制录制网络数据
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override

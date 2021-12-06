@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -53,16 +54,11 @@ import com.xiaomi.mimcdemo.listener.OnAudioDecodedListener;
 import com.xiaomi.mimcdemo.listener.OnAudioEncodedListener;
 import com.xiaomi.mimcdemo.listener.OnCallStateListener;
 import com.xiaomi.mimcdemo.proto.AV;
+import com.xiaomi.mimcdemo.utils.ChannelUtil;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -71,8 +67,11 @@ public class HomeActivity extends Activity {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
 
-    public static final int ACTIVITY_RESULT_SCAN = 10001;
+    public static final int ACTIVITY_RESULT_SCAN_CONTACT = 10001;
     public static final int ACTIVITY_RESULT_ADD_CONTACT = 10002;
+    public static final int ACTIVITY_RESULT_SCAN_CHANNEL = 10003;
+
+    public static final String MARK = "MarksunmimarM";
 
     private ActivityHomeBinding binding;
 
@@ -464,6 +463,59 @@ public class HomeActivity extends Activity {
         };
 
         binding.tvDeviceId.setText(MIMCApplication.getInstance().getSerial());
+
+        binding.bnv.getMenu().getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                LogUtil.e(TAG, "menu it contact onClicked!");
+                if(UserManager.getInstance().getMIMCUser() == null){
+                    LogUtil.e(TAG, "not login!!!");
+                    return true;
+                }
+                binding.llJustContact.setVisibility(View.VISIBLE);
+                binding.llJustChannel.setVisibility(View.GONE);
+                MIMCApplication.getInstance().vibrate();
+                return false;
+            }
+        });
+
+        binding.bnv.getMenu().getItem(1).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                LogUtil.e(TAG, "menu it channel onClicked!");
+                if(UserManager.getInstance().getMIMCUser() == null){
+                    LogUtil.e(TAG, "not login!!!");
+                    return true;
+                }
+                binding.llJustContact.setVisibility(View.GONE);
+                binding.llJustChannel.setVisibility(View.VISIBLE);
+                MIMCApplication.getInstance().vibrate();
+                return false;
+            }
+        });
+
+        binding.channelQrImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                channelQRImageClicked();
+            }
+        });
+    }
+
+    private void channelQRImageClicked(){
+        LogUtil.e(TAG, "channelQRImageClicked()");
+        if(ChannelUtil.getChannelInfo() == null){
+            Toast.makeText(HomeActivity.this, "尚未加入频道, 请加入频道后再试", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String[] channelInfo = ChannelUtil.getChannelInfo();
+        String callID = channelInfo[0];
+        String callKey = channelInfo[1];
+
+        String channelQRInfo = callID + MARK + callID;
+
+        ChannelQRCodeFragment fragment = ChannelQRCodeFragment.newInstance(channelQRInfo);
+        fragment.show(getFragmentManager(), ChannelQRCodeFragment.TAG);
     }
 
     private void uiRefreshContact() {
@@ -492,13 +544,13 @@ public class HomeActivity extends Activity {
 
     private void doClickScanImage() {
         Intent intent = new Intent(HomeActivity.this, ScanActivity.class);
-        startActivityForResult(intent, ACTIVITY_RESULT_SCAN);
+        startActivityForResult(intent, ACTIVITY_RESULT_SCAN_CONTACT);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ACTIVITY_RESULT_SCAN) {
+        if (requestCode == ACTIVITY_RESULT_SCAN_CONTACT) {
             if (data != null) {
                 String qrInfo = data.getStringExtra(CustomKeys.KEY_QR_INFO);
                 LogUtil.e(TAG, "qrInfo is: " + qrInfo);
@@ -548,8 +600,8 @@ public class HomeActivity extends Activity {
     }
 
     private void doClickQrCodeImage() {
-        QRCodeFragment fragment = QRCodeFragment.newInstance();
-        fragment.show(getFragmentManager(), QRCodeFragment.TAG);
+        ContactQRCodeFragment fragment = ContactQRCodeFragment.newInstance();
+        fragment.show(getFragmentManager(), ContactQRCodeFragment.TAG);
     }
 
     private void doClickOnRecyclerView() {

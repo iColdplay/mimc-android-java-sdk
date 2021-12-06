@@ -1,277 +1,396 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
     </data>
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="1">
 
         <LinearLayout
-            android:id="@+id/ll_normal"
+            android:id="@+id/ll_just_contact"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.94"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/ll_user_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:orientation="horizontal"
+                            android:weightSum="1"
+                            tools:ignore="RtlHardcoded">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.7"
+                                android:gravity="center|left"
+                                android:orientation="vertical"
+                                android:weightSum="1">
+
+                                <TextView
+                                    android:id="@+id/tv_user_name"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_marginStart="25dp"
+                                    android:layout_marginTop="50dp"
+                                    android:layout_weight="0.7"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/colorWhite"
+                                    android:textSize="30sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_device_id"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_marginStart="25dp"
+                                    android:layout_weight="0.3"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/colorWhite"
+                                    android:textSize="15sp" />
+
+                            </LinearLayout>
+
+
+                            <!--                        <TextView-->
+                            <!--                            android:id="@+id/tv_user_name"-->
+                            <!--                            android:layout_width="0dp"-->
+                            <!--                            android:layout_weight="0.7"-->
+                            <!--                            android:layout_height="wrap_content"-->
+                            <!--                            android:layout_marginStart="25dp"-->
+                            <!--                            android:layout_marginTop="50dp"-->
+                            <!--                            android:textAllCaps="false"-->
+                            <!--                            android:textColor="@color/colorWhite"-->
+                            <!--                            android:textSize="30sp" />-->
+
+                            <ImageView
+                                android:id="@+id/image_qrcode"
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="right|bottom"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="0.1"
+                                android:src="@drawable/qrcode_red" />
+
+                            <ImageView
+                                android:id="@+id/image_scan"
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="left|bottom"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="0.1"
+                                android:src="@drawable/scan_red" />
+
+                            <ImageView
+                                android:id="@+id/add"
+                                android:layout_width="0dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="left|bottom"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="0.1"
+                                android:scaleX="1.2"
+                                android:scaleY="1.2"
+                                android:src="@drawable/add" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_recent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/ll_user_name"
+                            android:layout_marginStart="25dp"
+                            android:layout_marginTop="20dp"
+                            android:text="最近联系人"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="20sp"
+                            android:visibility="gone" />
+
+                        <com.daimajia.swipe.SwipeLayout
+                            android:id="@+id/swipe_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_below="@id/tv_recent"
+                            android:layout_marginStart="25dp"
+                            android:layout_marginEnd="25dp"
+                            android:background="@drawable/bg_shape_contact"
+                            android:visibility="invisible">
+                            <!-- Bottom View Start-->
+                            <LinearLayout
+                                android:id="@+id/bottom_wrapper"
+                                android:layout_width="80dp"
+                                android:layout_height="match_parent"
+                                android:background="#FFFFFF"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
+                                <!--What you want to show-->
+                                <ImageView
+                                    android:id="@+id/delete"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/icon_delete" />
+                            </LinearLayout>
+                            <!-- Bottom View End-->
+
+                            <!-- Surface View Start -->
+                            <LinearLayout
+                                android:id="@+id/ll_swipe_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/colorPrimary"
+                                android:gravity="center">
+                                <!--What you want to show in SurfaceView-->
+
+                                <TextView
+                                    android:id="@+id/tv_recent_name"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/colorWhite"
+                                    android:textSize="15sp" />
+                            </LinearLayout>
+                            <!-- Surface View End -->
+                        </com.daimajia.swipe.SwipeLayout>
+
+                        <TextView
+                            android:id="@+id/tv_all"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/swipe_layout"
+                            android:layout_marginStart="25dp"
+                            android:text="所有联系人"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_contact_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_all"
+                            android:gravity="center"
+                            android:paddingTop="5dp">
+
+                            <TextView
+                                android:id="@+id/tv_no_contact"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="暂无联系人, 点击添加"
+                                android:textAllCaps="false"
+                                android:textColor="@color/colorWhite"
+                                android:textSize="15sp"
+                                android:visibility="visible" />
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rv_contact_list"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                tools:listitem="@layout/item_name_sn" />
+                        </LinearLayout>
+                    </RelativeLayout>
+                </ScrollView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_login"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/et"
+                        android:layout_width="200dp"
+                        android:layout_height="50dp"
+                        android:background="@color/colorWhite"
+                        android:textAlignment="center" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_login"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="@string/login"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_initializing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ProgressBar
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_gravity="center"
+                    android:indeterminateDrawable="@drawable/anim_progress"
+                    android:indeterminateDuration="1000" />
+
+                <TextView
+                    android:id="@+id/tv_status_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/firmware_initializing"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_just_channel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.94"
             android:background="@color/colorPrimaryDark"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
 
-            <ScrollView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <RelativeLayout
+                <LinearLayout
+                    android:id="@+id/ll_channel_detail"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDark"
+                    android:gravity="left"
+                    android:orientation="horizontal"
+                    android:weightSum="1"
+                    tools:ignore="RtlHardcoded">
+
 
                     <LinearLayout
-                        android:id="@+id/ll_user_name"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="left"
-                        android:weightSum="1"
-                        android:orientation="horizontal"
-                        tools:ignore="RtlHardcoded">
+                        android:layout_weight="0.7"
+                        android:gravity="center|left"
+                        android:orientation="vertical"
+                        android:weightSum="1">
 
-                        <LinearLayout
-                            android:gravity="center|left"
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:layout_weight="0.7"
-                            android:weightSum="1"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/tv_user_name"
-                                android:layout_width="match_parent"
-                                android:layout_weight="0.7"
-                                android:layout_height="0dp"
-                                android:layout_marginStart="25dp"
-                                android:layout_marginTop="50dp"
-                                android:textAllCaps="false"
-                                android:textColor="@color/colorWhite"
-                                android:textSize="30sp" />
-
-                            <TextView
-                                android:id="@+id/tv_device_id"
-                                android:layout_width="match_parent"
-                                android:layout_weight="0.3"
-                                android:layout_height="0dp"
-                                android:layout_marginStart="25dp"
-                                android:textAllCaps="false"
-                                android:textColor="@color/colorWhite"
-                                android:textSize="15sp" />
-
-                        </LinearLayout>
-
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/tv_user_name"-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_weight="0.7"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginStart="25dp"-->
-<!--                            android:layout_marginTop="50dp"-->
-<!--                            android:textAllCaps="false"-->
-<!--                            android:textColor="@color/colorWhite"-->
-<!--                            android:textSize="30sp" />-->
-
-                        <ImageView
-                            android:layout_gravity="right|bottom"
-                            android:layout_marginBottom="10dp"
-                            android:layout_width="0dp"
-                            android:layout_weight="0.1"
-                            android:id="@+id/image_qrcode"
-                            android:src="@drawable/qrcode_red"
-                            android:layout_height="20dp"/>
-
-                        <ImageView
-                            android:layout_gravity="left|bottom"
-                            android:layout_marginBottom="10dp"
-                            android:layout_width="0dp"
-                            android:layout_weight="0.1"
-                            android:id="@+id/image_scan"
-                            android:src="@drawable/scan_red"
-                            android:layout_height="20dp"/>
-
-                        <ImageView
-                            android:scaleY="1.2"
-                            android:scaleX="1.2"
-                            android:layout_gravity="left|bottom"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:layout_width="0dp"
-                            android:layout_weight="0.1"
-                            android:id="@+id/add"
-                            android:src="@drawable/add"
-                            android:layout_height="20dp"/>
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:visibility="gone"
-                        android:layout_marginTop="20dp"
-                        android:layout_below="@id/ll_user_name"
-                        android:text="最近联系人"
-                        android:id="@+id/tv_recent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="25dp"
-                        android:textAllCaps="false"
-                        android:textColor="@color/colorWhite"
-                        android:textSize="20sp" />
-
-                    <com.daimajia.swipe.SwipeLayout
-                        android:visibility="invisible"
-                        android:id="@+id/swipe_layout"
-                        android:layout_marginStart="25dp"
-                        android:layout_marginEnd="25dp"
-                        android:background="@drawable/bg_shape_contact"
-                        android:layout_below="@id/tv_recent"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp">
-                        <!-- Bottom View Start-->
-                        <LinearLayout
-                            android:gravity="center"
-                            android:background="#FFFFFF"
-                            android:id="@+id/bottom_wrapper"
-                            android:layout_width="80dp"
-                            android:weightSum="1"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-                            <!--What you want to show-->
-                            <ImageView
-                                android:id="@+id/delete"
-                                android:src="@drawable/icon_delete"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-                        </LinearLayout>
-                        <!-- Bottom View End-->
-
-                        <!-- Surface View Start -->
-                        <LinearLayout
-                            android:id="@+id/ll_swipe_info"
-                            android:gravity="center"
-                            android:background="@color/colorPrimary"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                            <!--What you want to show in SurfaceView-->
-
-                            <TextView
-                                android:textColor="@color/colorWhite"
-                                android:textSize="15sp"
-                                android:textAllCaps="false"
-                                android:id="@+id/tv_recent_name"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-                        </LinearLayout>
-                        <!-- Surface View End -->
-                    </com.daimajia.swipe.SwipeLayout>
-
-                    <TextView
-                        android:layout_below="@id/swipe_layout"
-                        android:text="所有联系人"
-                        android:id="@+id/tv_all"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="25dp"
-                        android:textAllCaps="false"
-                        android:textColor="@color/colorWhite"
-                        android:textSize="20sp" />
-
-                    <LinearLayout
-                        android:gravity="center"
-                        android:paddingTop="5dp"
-                        android:layout_below="@id/tv_all"
-                        android:id="@+id/ll_contact_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
                         <TextView
-                            android:layout_marginTop="5dp"
-                            android:visibility="visible"
-                            android:text="暂无联系人, 点击添加"
-                            android:textColor="@color/colorWhite"
-                            android:textSize="15sp"
-                            android:textAllCaps="false"
-                            android:id="@+id/tv_no_contact"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <android.support.v7.widget.RecyclerView
-                            android:id="@+id/rv_contact_list"
-                            android:layout_marginTop="5dp"
+                            android:id="@+id/tv_current_channel"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:listitem="@layout/item_name_sn" />
+                            android:layout_height="0dp"
+                            android:layout_marginStart="25dp"
+                            android:layout_marginTop="50dp"
+                            android:layout_weight="0.7"
+                            android:text="当前频道"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="30sp" />
+
+                        <TextView
+                            android:id="@+id/tv_channel_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="26dp"
+                            android:layout_weight="0.3"
+                            android:text="暂无频道信息"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="15sp" />
+
                     </LinearLayout>
-                </RelativeLayout>
-            </ScrollView>
+
+
+                    <!--                        <TextView-->
+                    <!--                            android:id="@+id/tv_user_name"-->
+                    <!--                            android:layout_width="0dp"-->
+                    <!--                            android:layout_weight="0.7"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_marginStart="25dp"-->
+                    <!--                            android:layout_marginTop="50dp"-->
+                    <!--                            android:textAllCaps="false"-->
+                    <!--                            android:textColor="@color/colorWhite"-->
+                    <!--                            android:textSize="30sp" />-->
+
+                    <ImageView
+                        android:id="@+id/channel_qr_image"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="right|bottom"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/qrcode_red" />
+
+                    <ImageView
+                        android:id="@+id/channel_qr_scan"
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="left|bottom"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/scan_red" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_login"
+
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/bnv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.06"
             android:background="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/et"
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:background="@color/colorWhite"
-                    android:textAlignment="center" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_login"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:gravity="center"
-                android:text="@string/login"
-                android:textAllCaps="false"
-                android:textColor="@color/colorWhite"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_initializing"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <ProgressBar
-                android:layout_width="88dp"
-                android:layout_height="88dp"
-                android:layout_gravity="center"
-                android:indeterminateDrawable="@drawable/anim_progress"
-                android:indeterminateDuration="1000" />
-
-            <TextView
-                android:id="@+id/tv_status_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/firmware_initializing"
-                android:textColor="@color/colorText"
-                android:textSize="16sp" />
-        </LinearLayout>
+            app:itemBackground="@drawable/drawable_selector"
+            app:itemIconTint="@color/meun_item_bg"
+            app:itemTextColor="@color/navi_item_color"
+            app:menu="@menu/menu_bottom_navi"></android.support.design.widget.BottomNavigationView>
     </LinearLayout>
 
 </layout>

@@ -2,7 +2,6 @@ package com.xiaomi.mimcdemo.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 
-import com.alibaba.fastjson.JSONObject;
 import com.sunmi.scan.Config;
 import com.sunmi.scan.Image;
 import com.sunmi.scan.ImageScanner;
@@ -24,7 +22,6 @@ import com.sunmi.scan.SymbolSet;
 import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.common.CustomKeys;
 import com.xiaomi.mimcdemo.databinding.ActivityScanBinding;
-import com.xiaomi.mimcdemo.utils.LogUtil;
 
 public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 
@@ -107,7 +104,11 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
             if (use_auto_focus)
                 parameters.setFocusMode(parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             mCamera.setParameters(parameters);
-            mCamera.setDisplayOrientation(270);//手持机使用，竖屏显示,T1/T2 mini需要屏蔽掉
+            if(MIMCApplication.deviceModel.toLowerCase().contains("pixel") || MIMCApplication.deviceModel.toLowerCase().contains("sm")) {
+                mCamera.setDisplayOrientation(90);
+            }else {
+                mCamera.setDisplayOrientation(270);//手持机使用，竖屏显示,T1/T2 mini需要屏蔽掉
+            }
             mCamera.setPreviewDisplay(mHolder);
             mCamera.setPreviewCallback(previewCallback);
             mCamera.startPreview();
@@ -134,7 +135,7 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
                 if (!TextUtils.isEmpty(sb.toString())) {
                     Intent result = new Intent();
                     result.putExtra(CustomKeys.KEY_QR_INFO, sb.toString());
-                    setResult(HomeActivity.ACTIVITY_RESULT_SCAN, result);
+                    setResult(HomeActivity.ACTIVITY_RESULT_SCAN_CONTACT, result);
                     finish();
                 }
             }

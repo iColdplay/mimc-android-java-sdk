@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,6 +42,8 @@ public class MIMCApplication extends Application {
 
     private DBHelper mHelper;
     private SQLiteDatabase mDatabase;
+
+    public static String deviceModel;
 
     @Override
     public void onCreate() {
@@ -103,6 +106,8 @@ public class MIMCApplication extends Application {
         instance = this;
 
         LogUtil.e(TAG, "Device SN is " + getSerial());
+
+        deviceModel = Build.MODEL;
     }
 
     public static Context getContext() {
@@ -208,6 +213,11 @@ public class MIMCApplication extends Application {
 //        }
 //        return null;
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    public void vibrate() {
+        Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        vibrator.vibrate(100);
     }
 
 }

@@ -9,8 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xiaomi.mimcdemo.common.CustomKeys;
+import com.xiaomi.mimcdemo.common.UserManager;
 import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.ItemNameSnBinding;
+import com.xiaomi.mimcdemo.utils.LogUtil;
+import com.xiaomi.mimcdemo.utils.ViewUtil;
 
 import java.util.List;
 
@@ -39,9 +42,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         return this.list == null ? 0 : this.list.size();
     }
 
-
     static class ViewHolder extends RecyclerView.ViewHolder {
         ItemNameSnBinding binding;
+        boolean isOnClickRunning = false;
 
         public ViewHolder(ItemNameSnBinding itemView) {
             super(itemView.getRoot());
@@ -66,13 +69,40 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 @Override
                 public void onClick(View v) {
 
-                    Message message1 = Message.obtain();
-                    message1.what = HomeActivity.MSG_CALL_GOING_OUT;
-                    Bundle data = new Bundle();
-                    data.putString(CustomKeys.KEY_GOING_OUT_NAME, contact.getCustomName());
-                    data.putString(CustomKeys.KEY_GOING_OUT_ID, contact.getSn());
-                    message1.setData(data);
-                    HomeActivity.callHandler.sendMessage(message1);
+
+                    if(ViewUtil.isFastDoubleClick()){
+                        LogUtil.e("PINGPONG", "this is fast click, just ignore it ");
+                        return;
+                    }
+
+//                    Message message1 = Message.obtain();
+//                    message1.what = HomeActivity.MSG_CALL_GOING_OUT;
+//                    Bundle data = new Bundle();
+//                    data.putString(CustomKeys.KEY_GOING_OUT_NAME, contact.getCustomName());
+//                    data.putString(CustomKeys.KEY_GOING_OUT_ID, contact.getSn());
+//                    message1.setData(data);
+//                    HomeActivity.callHandler.sendMessage(message1);
+
+                    HomeActivity.pongSet.remove(contact.getSn() + contact.getCustomName());
+                    UserManager.getInstance().getMIMCUser().sendMessage(contact.getSn() + contact.getCustomName(), "PING".getBytes());
+                    boolean ret = false;
+                    long start = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - start < 1200){
+                        if(HomeActivity.pongSet.contains(contact.getSn()+contact.getCustomName())){
+                            ret = true;
+                            break;
+                        }
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if(ret){
+                        LogUtil.e("PINGPONG", "对方在线! PINGNPONG耗时: " + (System.currentTimeMillis() - start) + "ms");
+                    }else {
+                        LogUtil.e("PINGPONG", "对方不在线!!! 请稍后重试");
+                    }
 
                 }
             });

@@ -11,6 +11,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -54,18 +55,19 @@ import com.xiaomi.mimcdemo.listener.OnAudioEncodedListener;
 import com.xiaomi.mimcdemo.listener.OnCallStateListener;
 import com.xiaomi.mimcdemo.proto.AV;
 import com.xiaomi.mimcdemo.utils.LogUtil;
+import com.xiaomi.mimcdemo.utils.PingPongAutoReplier;
+import com.xiaomi.mimcdemo.utils.ViewUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 public class HomeActivity extends Activity {
 
@@ -93,7 +95,8 @@ public class HomeActivity extends Activity {
 
         @Override
         public void onHandleMessage(ChatMsg chatMsg) {
-
+            LogUtil.e(TAG, "HomeActivity onHandleMIMCMsgListener onHandleMessage()");
+            PingPongAutoReplier.getInstance().executePingPongRunnable(chatMsg);
         }
 
         @Override
@@ -103,7 +106,8 @@ public class HomeActivity extends Activity {
 
         @Override
         public void onHandleStatusChanged(MIMCConstant.OnlineStatus status) {
-
+            LogUtil.e(TAG, "onHandleStatusChanged() invoked");
+            LogUtil.e(TAG, status.toString());
         }
 
         @Override
@@ -235,6 +239,11 @@ public class HomeActivity extends Activity {
     private volatile boolean nowReceivingVoice = false; //用来控制录制网络数据
 
     public static String callerName = "未知";
+
+//    public static HandlerThread htOnlineDetector = new HandlerThread("online-detector");
+//    public static Handler handlerOnlineDetector;
+
+    public static Collection pongSet;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -463,7 +472,19 @@ public class HomeActivity extends Activity {
             }
         };
 
+        Set<String> pongs = new HashSet<>();
+        pongSet = Collections.synchronizedSet(pongs);
+
         binding.tvDeviceId.setText(MIMCApplication.getInstance().getSerial());
+//        htOnlineDetector.start();
+//        handlerOnlineDetector = new Handler(htOnlineDetector.getLooper()){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                Bundle data = msg.getData();
+//                String fromAccount = data.getString("fromAccount");
+//            }
+//        };
     }
 
     private void uiRefreshContact() {

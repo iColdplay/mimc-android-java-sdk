@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.xiaomi.mimcdemo">
+    package="com.xiaomi.mimcdemo">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
 
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -14,22 +14,22 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".ui.MIMCApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_icon"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:largeHeap="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.MyMIMCDemo">
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyMIMCDemo"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.HomeActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,24 +38,28 @@
         </activity>
         <activity
             android:name=".ui.VoiceCallActivity"
-            android:launchMode="singleTask"
             android:configChanges="orientation|keyboard|keyboardHidden"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+
         <service
             android:name=".service.CallService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <service
+            android:name=".service.TalkService"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity
             android:name=".ui.ScanActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            />
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.AddContactActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            />
+            android:screenOrientation="portrait" />
     </application>
 </manifest>

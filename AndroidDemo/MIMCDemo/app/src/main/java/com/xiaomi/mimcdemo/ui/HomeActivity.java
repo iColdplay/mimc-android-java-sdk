@@ -54,6 +54,7 @@ import com.xiaomi.mimcdemo.listener.OnAudioDecodedListener;
 import com.xiaomi.mimcdemo.listener.OnAudioEncodedListener;
 import com.xiaomi.mimcdemo.listener.OnCallStateListener;
 import com.xiaomi.mimcdemo.proto.AV;
+import com.xiaomi.mimcdemo.service.TalkService;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 import com.xiaomi.mimcdemo.utils.PingPongAutoReplier;
 import com.xiaomi.mimcdemo.utils.ViewUtil;
@@ -250,6 +251,9 @@ public class HomeActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogUtil.e(TAG, "onCreate()");
+
+        Intent talkService = new Intent(this, TalkService.class);
+        startService(talkService);
 
         setNavigationBarColor(this);
 

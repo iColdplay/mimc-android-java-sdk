@@ -3,15 +3,19 @@ package com.xiaomi.mimcdemo.ui;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.hardware.fingerprint.FingerprintManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -246,14 +250,40 @@ public class HomeActivity extends Activity {
 
     public static Collection pongSet;
 
+    private TalkService talkService;
+    private TalkService.TalkServiceBinder binder;
+    private TalkService.DataCallback dataCallback = new TalkService.DataCallback() {
+        @Override
+        public void onDataCallback(Bundle data) {
+
+        }
+    };
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LogUtil.e(TAG, "onServiceConnected()");
+            binder = (TalkService.TalkServiceBinder) service;
+            talkService = binder.getService();
+            talkService.setCallback(dataCallback);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            LogUtil.e(TAG, "onServiceDisconnected()");
+        }
+    };
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogUtil.e(TAG, "onCreate()");
 
-        Intent talkService = new Intent(this, TalkService.class);
-        startService(talkService);
+//        Intent talkService = new Intent(this, TalkService.class);
+//        startService(talkService);
+
+        Intent bindIntent = new Intent(this, TalkService.class);
+        bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
 
         setNavigationBarColor(this);
 

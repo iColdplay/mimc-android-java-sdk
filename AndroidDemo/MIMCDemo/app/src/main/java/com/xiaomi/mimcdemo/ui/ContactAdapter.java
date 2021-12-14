@@ -17,9 +17,11 @@ import com.xiaomi.mimcdemo.utils.ViewUtil;
 
 import java.util.List;
 
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder>{
+public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
     private final List<Contact> list;
+
+    private static final long ONLINE_DETECT_TIME_INTERVAL = 1200L;
 
     public ContactAdapter(List<Contact> list) {
         this.list = list;
@@ -70,7 +72,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 public void onClick(View v) {
 
 
-                    if(ViewUtil.isFastDoubleClick()){
+                    if (ViewUtil.isFastDoubleClick()) {
                         LogUtil.e("PINGPONG", "this is fast click, just ignore it ");
                         return;
                     }
@@ -87,8 +89,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     UserManager.getInstance().getMIMCUser().sendMessage(contact.getSn() + contact.getCustomName(), "PING".getBytes());
                     boolean ret = false;
                     long start = System.currentTimeMillis();
-                    while (System.currentTimeMillis() - start < 1200){
-                        if(HomeActivity.pongSet.contains(contact.getSn()+contact.getCustomName())){
+                    while (System.currentTimeMillis() - start < ONLINE_DETECT_TIME_INTERVAL) {
+                        if (HomeActivity.pongSet.contains(contact.getSn() + contact.getCustomName())) {
                             ret = true;
                             break;
                         }
@@ -98,9 +100,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                             e.printStackTrace();
                         }
                     }
-                    if(ret){
+                    if (ret) {
                         LogUtil.e("PINGPONG", "对方在线! PINGNPONG耗时: " + (System.currentTimeMillis() - start) + "ms");
-                    }else {
+                    } else {
                         LogUtil.e("PINGPONG", "对方不在线!!! 请稍后重试");
                     }
 

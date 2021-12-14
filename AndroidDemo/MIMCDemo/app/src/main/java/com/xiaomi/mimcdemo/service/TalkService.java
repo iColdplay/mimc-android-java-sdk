@@ -4,15 +4,24 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.ui.HomeActivity;
 import com.xiaomi.mimcdemo.utils.LogUtil;
+
+import java.util.Objects;
 
 public class TalkService extends Service {
 
@@ -20,16 +29,105 @@ public class TalkService extends Service {
 
     private static final int FOREGROUND_CODE = 10000;
 
+    private static volatile String PTT_STATUS = "idle";
+    private final static String PTT_STATUS_IDLE = "idle";
+    private final static String PTT_STATUS_SPEAKING = "speaking";
+    private final static String PTT_STATUS_LISTENING = "listening";
+
+    private synchronized boolean isPttIdle(){
+        return PTT_STATUS.equals(PTT_STATUS_IDLE);
+    }
+
+    private synchronized boolean isPttSpeaking(){
+        return PTT_STATUS.equals(PTT_STATUS_SPEAKING);
+    }
+
+    private synchronized boolean ispPttListening(){
+        return PTT_STATUS.equals(PTT_STATUS_LISTENING);
+    }
+
+    private synchronized boolean setPttIdle(){
+        PTT_STATUS = PTT_STATUS_IDLE;
+        return true;
+    }
+
+    private synchronized boolean setPttSpeaking(){
+        PTT_STATUS = PTT_STATUS_SPEAKING;
+        return true;
+    }
+
+    private synchronized boolean setPttListening(){
+        PTT_STATUS = PTT_STATUS_LISTENING;
+        return true;
+    }
+
+    public static final String ACTION_PTT_KEY_DOWN = "com.sunmi.ptt.key.down"; //侧键按下
+    public static final String ACTION_PTT_KEY_UP = "com.sunmi.ptt.key.up"; //侧键松开
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent != null) {
+                LogUtil.e(TAG, "TalkService receiver action: " + intent.getAction());
+
+                if(Objects.equals(intent.getAction(), ACTION_PTT_KEY_UP)){
+                    LogUtil.e(TAG, "TalkService receiver action KEY_UP");
+
+                    if(isPttSpeaking()){
+                        LogUtil.e(TAG, "speaking should stop now");
+                        // todo stop speaking flow
+                    }else {
+                        LogUtil.e(TAG, "not even speaking");
+                        Toast.makeText(TalkService.this, "Busy now, try it later", Toast.LENGTH_SHORT).show();
+                    }
+
+                    return;
+                }
+
+                if(Objects.equals(intent.getAction(), ACTION_PTT_KEY_DOWN)){
+                    LogUtil.e(TAG, "TalkService receiver action KEY_DOWN");
+                    if(isPttIdle()){
+                        LogUtil.e(TAG, "speaking should start now");
+                        // todo start speaking flow
+                    }else {
+                        LogUtil.e(TAG, "not even idle, we won't do anything");
+                        Toast.makeText(TalkService.this, "Busy now, try it later", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                }
+            }
+        }
+    };
+
+    public DataCallback getCallback() {
+        return callback;
+    }
+
+    public void setCallback(DataCallback callback) {
+        this.callback = callback;
+    }
+
+    public interface DataCallback{
+        void onDataCallback(Bundle data);
+    }
+
+    private DataCallback callback;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new TalkServiceBinder();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         LogUtil.e(TAG, "onCreate()");
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_PTT_KEY_DOWN);
+        intentFilter.addAction(ACTION_PTT_KEY_UP);
+        registerReceiver(receiver, intentFilter);
     }
 
     @Override
@@ -60,5 +158,13 @@ public class TalkService extends Service {
     public void onDestroy() {
         super.onDestroy();
         LogUtil.e(TAG, "onDestroy()");
+        unregisterReceiver(receiver);
     }
+
+    public class TalkServiceBinder extends Binder{
+        public TalkService getService(){
+            return TalkService.this;
+        }
+    }
+
 }

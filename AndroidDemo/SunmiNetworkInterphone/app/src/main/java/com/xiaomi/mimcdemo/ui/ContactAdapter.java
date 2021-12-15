@@ -46,7 +46,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ItemNameSnBinding binding;
-        boolean isOnClickRunning = false;
 
         public ViewHolder(ItemNameSnBinding itemView) {
             super(itemView.getRoot());

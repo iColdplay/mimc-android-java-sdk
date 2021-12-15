@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MIMCDemo</string>
+    <string name="app_name">网络对讲机</string>
     <string name="action_settings">Settings</string>
     <string name="button_send">发送</string>
     <string name="button_ok">确定</string>

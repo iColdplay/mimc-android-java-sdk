@@ -18,6 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.xiaomi.mimcdemo.R;
+import com.xiaomi.mimcdemo.manager.AudioEventManager;
 import com.xiaomi.mimcdemo.ui.HomeActivity;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
@@ -28,8 +29,6 @@ public class TalkService extends Service {
     private static final String TAG = TalkService.class.getSimpleName();
 
     private static final int FOREGROUND_CODE = 10000;
-
-
 
     public static final String ACTION_PTT_KEY_DOWN = "com.sunmi.ptt.key.down"; //侧键按下
     public static final String ACTION_PTT_KEY_UP = "com.sunmi.ptt.key.up"; //侧键松开
@@ -43,7 +42,7 @@ public class TalkService extends Service {
                 if(Objects.equals(intent.getAction(), ACTION_PTT_KEY_UP)){
                     LogUtil.e(TAG, "TalkService receiver action KEY_UP");
 
-                    if(isPttSpeaking()){
+                    if(AudioEventManager.getInstance().isPttSpeaking()){
                         LogUtil.e(TAG, "speaking should stop now");
                         // todo stop speaking flow
                     }else {
@@ -56,7 +55,7 @@ public class TalkService extends Service {
 
                 if(Objects.equals(intent.getAction(), ACTION_PTT_KEY_DOWN)){
                     LogUtil.e(TAG, "TalkService receiver action KEY_DOWN");
-                    if(isPttIdle()){
+                    if(AudioEventManager.getInstance().isPttIdle()){
                         LogUtil.e(TAG, "speaking should start now");
                         // todo start speaking flow
                     }else {
@@ -121,7 +120,7 @@ public class TalkService extends Service {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pi);
         startForeground(FOREGROUND_CODE, builder.build());
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.xiaomi.mimcdemo.manager;
 
+/***
+ * 未接来电管理
+ */
 public class SunmiMissCallManager {
 
     private static final String TAG = SunmiMissCallManager.class.getSimpleName();

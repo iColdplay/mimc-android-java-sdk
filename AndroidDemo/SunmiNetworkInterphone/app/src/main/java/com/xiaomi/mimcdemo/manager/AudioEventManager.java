@@ -43,6 +43,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
+/***
+ * 音频事件管理
+ */
 public class AudioEventManager {
 
     private static final String TAG = AudioEventManager.class.getSimpleName();
@@ -80,9 +83,6 @@ public class AudioEventManager {
     private AudioEventCallback audioEventCallback;
 
     private void init() {
-        // 设置处理MIMC消息监听器
-        UserManager.getInstance().setHandleMIMCMsgListener(onHandleMIMCMsgListener);
-
         // 使用htCall 作为call独立处理线程
         htCall = new HandlerThread("call_handler_thread");
         callHandler = new Handler(htCall.getLooper()) {
@@ -122,6 +122,8 @@ public class AudioEventManager {
                     if (audioRecorder != null) {
                         audioRecorder.stop();
                     }
+
+                    setPttIdle(); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~状态转换为Speaking
 
                     LogUtil.e(TAG, "----------MSG_FINISH handle end  ----------");
                 }
@@ -236,131 +238,6 @@ public class AudioEventManager {
         PTT_STATUS = PTT_STATUS_LISTENING;
         return true;
     }
-
-    private final UserManager.OnHandleMIMCMsgListener onHandleMIMCMsgListener = new UserManager.OnHandleMIMCMsgListener() {
-
-        @Override
-        public void onHandleMessage(ChatMsg chatMsg) {
-            LogUtil.e(TAG, "HomeActivity onHandleMIMCMsgListener onHandleMessage()");
-            PingPongAutoReplier.getInstance().executePingPongRunnable(chatMsg);
-        }
-
-        @Override
-        public void onHandleGroupMessage(ChatMsg chatMsg) {
-
-        }
-
-        @Override
-        public void onHandleStatusChanged(MIMCConstant.OnlineStatus status) {
-            LogUtil.e(TAG, "onHandleStatusChanged() invoked");
-            LogUtil.e(TAG, status.toString());
-        }
-
-        @Override
-        public void onHandleServerAck(MIMCServerAck serverAck) {
-
-        }
-
-        @Override
-        public void onHandleOnlineMessageAck(MIMCOnlineMessageAck onlineMessageAck) {
-
-        }
-
-        @Override
-        public void onHandleCreateGroup(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleQueryGroupInfo(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleQueryGroupsOfAccount(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleJoinGroup(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleQuitGroup(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleKickGroup(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleUpdateGroup(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleDismissGroup(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandlePullP2PHistory(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandlePullP2THistory(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleSendMessageTimeout(MIMCMessage message) {
-
-        }
-
-        @Override
-        public void onHandleSendGroupMessageTimeout(MIMCGroupMessage groupMessage) {
-
-        }
-
-        @Override
-        public void onHandleJoinUnlimitedGroup(long topicId, int code, String errMsg) {
-
-        }
-
-        @Override
-        public void onHandleQuitUnlimitedGroup(long topicId, int code, String errMsg) {
-
-        }
-
-        @Override
-        public void onHandleDismissUnlimitedGroup(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleQueryUnlimitedGroupMembers(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleQueryUnlimitedGroups(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onHandleQueryUnlimitedGroupOnlineUsers(String json, boolean isSuccess) {
-
-        }
-
-        @Override
-        public void onPullNotification() {
-
-        }
-    };
 
     private final OnCallStateListener onCallStateListener = new OnCallStateListener() {
         @Override
@@ -563,7 +440,9 @@ public class AudioEventManager {
             return false;
         } else {
             LogUtil.e(TAG, "IDLE, but now CALL INCOMING");
-            setPttListening();
+
+            setPttListening(); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~状态变化为Listening
+
             Message message1 = callHandler.obtainMessage();
             message1.what = MSG_CALL_INCOMING;
             Bundle data = new Bundle();

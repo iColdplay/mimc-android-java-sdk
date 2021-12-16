@@ -23,7 +23,7 @@ import com.xiaomi.mimcdemo.bean.Msg;
 import com.xiaomi.mimcdemo.listener.OnCallStateListener;
 import com.xiaomi.mimcdemo.manager.AudioEventManager;
 import com.xiaomi.mimcdemo.manager.SunmiMissCallManager;
-import com.xiaomi.mimcdemo.ui.MIMCApplication;
+import com.xiaomi.mimcdemo.ui.MainApplication;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
 import okhttp3.*;
@@ -225,7 +225,7 @@ public class UserManager {
 
         // online
         // cachePath必须传入，用于缓存文件读写，否则返回null
-        mimcUser = MIMCUser.newInstance(appId, appAccount, MIMCApplication.getContext().getExternalCacheDir().getPath(), MIMCApplication.getContext().getCacheDir().getPath());
+        mimcUser = MIMCUser.newInstance(appId, appAccount, MainApplication.getContext().getExternalCacheDir().getPath(), MainApplication.getContext().getCacheDir().getPath());
         // staging
 //        mimcUser = MIMCUser.newInstance(appId, appAccount, MIMCApplication.getContext().getExternalCacheDir().getPath(), MIMCApplication.getContext().getCacheDir().getPath(), "http://10.38.162.117:6000/gslb/", "http://10.38.162.149/");
         // 注册相关监听，必须

@@ -47,4 +47,7 @@
     <color name="color10PercentPrimary">#1A3C7AFF</color>
     <color name="color5PercentPrimary">#0D3C7AFF</color>
 
+
+    <color name="design_background">#181B21</color>
+    <color name="design_user_title_color">#F1F1F1</color>
 </resources>

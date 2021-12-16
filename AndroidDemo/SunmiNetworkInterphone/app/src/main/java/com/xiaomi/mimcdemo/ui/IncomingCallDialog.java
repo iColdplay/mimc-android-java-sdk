@@ -30,14 +30,14 @@ public class IncomingCallDialog extends BaseDialogFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (binding == null) {
-            binding = DialogIncomingCallBinding.inflate(inflater, container, false);
-            binding.tvCallerName.setText(HomeActivity.callerName);
-            binding.btnClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    close();
-                }
-            });
+//            binding = DialogIncomingCallBinding.inflate(inflater, container, false);
+//            binding.tvCallerName.setText(HomeActivity.callerName);
+//            binding.btnClose.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    close();
+//                }
+//            });
         }
         return binding.getRoot();
     }
@@ -46,8 +46,8 @@ public class IncomingCallDialog extends BaseDialogFragment{
         dismiss();
         // tell HomeActivity call is over
         Message message1 = Message.obtain();
-        message1.what = HomeActivity.MSG_CALL_CLOSE_BY_CLIENT;
-        HomeActivity.callHandler.sendMessage(message1);
+//        message1.what = HomeActivity.MSG_CALL_CLOSE_BY_CLIENT;
+//        HomeActivity.callHandler.sendMessage(message1);
 
         binding = null;
     }

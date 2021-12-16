@@ -85,6 +85,7 @@ public class AudioEventManager {
     private void init() {
         // 使用htCall 作为call独立处理线程
         htCall = new HandlerThread("call_handler_thread");
+        htCall.start();
         callHandler = new Handler(htCall.getLooper()) {
             @Override
             public void handleMessage(Message msg) {

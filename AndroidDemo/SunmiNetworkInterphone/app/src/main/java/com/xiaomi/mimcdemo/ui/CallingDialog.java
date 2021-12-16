@@ -43,8 +43,8 @@ public class CallingDialog extends BaseDialogFragment {
         dismiss();
         // tell HomeActivity call is over
         Message message1 = Message.obtain();
-        message1.what = HomeActivity.MSG_CALL_CLOSE_BY_HOST;
-        HomeActivity.callHandler.sendMessage(message1);
+//        message1.what = HomeActivity.MSG_CALL_CLOSE_BY_HOST;
+//        HomeActivity.callHandler.sendMessage(message1);
 
         binding = null;
     }

@@ -13,7 +13,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -24,7 +23,6 @@ import android.widget.Toast;
 import com.tencent.mmkv.MMKV;
 import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.common.CustomKeys;
-import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.ActivityHomeBinding;
 import com.xiaomi.mimcdemo.service.TalkService;
 import com.xiaomi.mimcdemo.utils.LogUtil;
@@ -32,7 +30,6 @@ import com.xiaomi.mimcdemo.utils.LogUtil;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class HomeActivity extends Activity {
@@ -91,7 +88,7 @@ public class HomeActivity extends Activity {
         Intent bindIntent = new Intent(this, TalkService.class);
         bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
 
-        setNavigationBarColor(this);
+        setNBSBColor(this);
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_home);
 
@@ -119,10 +116,10 @@ public class HomeActivity extends Activity {
                 if (msg.what == MSG_DELETE_CONTACT) {
                     LogUtil.e(TAG, "HomeActivity delete contact");
                     Bundle data = msg.getData();
-                    boolean ret = MainApplication.getInstance().deleteDataBySN(data.getString(CustomKeys.KEY_SN));
-                    if (ret) {
-                        Toast.makeText(HomeActivity.this, "删除联系人成功", Toast.LENGTH_SHORT).show();
-                    }
+//                    boolean ret = MainApplication.getInstance().deleteDataBySN(data.getString(CustomKeys.KEY_SN));
+//                    if (ret) {
+                    Toast.makeText(HomeActivity.this, "删除联系人成功", Toast.LENGTH_SHORT).show();
+//                    }
                     uiRefreshContact();
                 }
             }
@@ -132,29 +129,32 @@ public class HomeActivity extends Activity {
         Set<String> pongs = new HashSet<>();
         pongSet = Collections.synchronizedSet(pongs);
 
+        // 显示ID信息
+        String id = MainApplication.getInstance().getSerial();
+        binding.tvIdInfo.setText("ID: " + id);
     }
 
     private void uiRefreshContact() {
-        LogUtil.e(TAG, "now ui refresh contact");
-
-        // 获取所有的联系人信息
-        List<Contact> contacts = MainApplication.getInstance().queryData();
-        if (contacts == null || contacts.size() == 0) {
-            LogUtil.e(TAG, "no contact");
-            binding.tvNoContact.setVisibility(View.VISIBLE);
-            binding.rvContactList.setVisibility(View.GONE);
-            return;
-        }
-
-        contactAdapter = new ContactAdapter(contacts);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(HomeActivity.this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        binding.rvContactList.setLayoutManager(linearLayoutManager);
-        binding.rvContactList.setAdapter(contactAdapter);
-        binding.tvNoContact.setVisibility(View.GONE);
-        binding.rvContactList.setVisibility(View.VISIBLE);
-
-        binding.llContactList.invalidate();
+//        LogUtil.e(TAG, "now ui refresh contact");
+//
+//        // 获取所有的联系人信息
+//        List<Contact> contacts = MainApplication.getInstance().queryData();
+//        if (contacts == null || contacts.size() == 0) {
+//            LogUtil.e(TAG, "no contact");
+//            binding.tvNoContact.setVisibility(View.VISIBLE);
+//            binding.rvContactList.setVisibility(View.GONE);
+//            return;
+//        }
+//
+//        contactAdapter = new ContactAdapter(contacts);
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(HomeActivity.this);
+//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        binding.rvContactList.setLayoutManager(linearLayoutManager);
+//        binding.rvContactList.setAdapter(contactAdapter);
+//        binding.tvNoContact.setVisibility(View.GONE);
+//        binding.rvContactList.setVisibility(View.VISIBLE);
+//
+//        binding.llContactList.invalidate();
 
     }
 
@@ -176,13 +176,13 @@ public class HomeActivity extends Activity {
                     return;
                 }
 
-                boolean result = MainApplication.getInstance().insertData(customName, sn);
-                if (result) {
-                    Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
-                    Message message1 = Message.obtain();
-                    message1.what = MSG_ADD_CONTACT;
-                    mainHandler.sendMessage(message1);
-                }
+//                boolean result = MainApplication.getInstance().insertData(customName, sn);
+//                if (result) {
+//                    Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
+//                    Message message1 = Message.obtain();
+//                    message1.what = MSG_ADD_CONTACT;
+//                    mainHandler.sendMessage(message1);
+//                }
             } else {
                 LogUtil.e(TAG, "activity result is null");
                 Toast.makeText(HomeActivity.this, "未获取到联系人信息", Toast.LENGTH_SHORT).show();
@@ -197,12 +197,12 @@ public class HomeActivity extends Activity {
                 LogUtil.e(TAG, "Custom Name: " + name);
                 LogUtil.e(TAG, "SN is: " + sn);
 
-                boolean ret = MainApplication.getInstance().insertData(name, sn);
-                if (ret) {
-                    Message message1 = Message.obtain();
-                    message1.what = MSG_ADD_CONTACT;
-                    mainHandler.sendMessage(message1);
-                }
+//                boolean ret = MainApplication.getInstance().insertData(name, sn);
+//                if (ret) {
+//                    Message message1 = Message.obtain();
+//                    message1.what = MSG_ADD_CONTACT;
+//                    mainHandler.sendMessage(message1);
+//                }
             } else {
                 LogUtil.e(TAG, "add result is null");
                 Toast.makeText(HomeActivity.this, "取消增加联系人", Toast.LENGTH_SHORT).show();
@@ -256,10 +256,18 @@ public class HomeActivity extends Activity {
     /***
      * 修改NavigationBar背景颜色 可自定义颜色
      * */
-    public static void setNavigationBarColor(Activity activity) {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void setNBSBColor(Activity activity) {
         Window window = activity.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setNavigationBarColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+        window.setNavigationBarColor(activity.getResources().getColor(R.color.design_background));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View decorView = activity.getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            activity.getWindow().setStatusBarColor(getColor(R.color.design_background));
+        }
     }
 
 }

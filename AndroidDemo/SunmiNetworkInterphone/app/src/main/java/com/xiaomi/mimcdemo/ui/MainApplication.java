@@ -3,27 +3,22 @@ package com.xiaomi.mimcdemo.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.ContentValues;
+
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+
 import android.provider.Settings;
-import android.text.TextUtils;
+
 import android.util.Log;
 import android.widget.Toast;
 
 import com.tencent.mmkv.MMKV;
 import com.xiaomi.mimc.logger.Logger;
 import com.xiaomi.mimc.logger.MIMCLog;
-import com.xiaomi.mimcdemo.database.Contact;
-import com.xiaomi.mimcdemo.database.DBHelper;
 import com.xiaomi.mimcdemo.manager.AudioEventManager;
+import com.xiaomi.mimcdemo.manager.ContactManager;
 import com.xiaomi.mimcdemo.manager.SDKUserBehaviorManager;
 import com.xiaomi.mimcdemo.manager.SunmiMissCallManager;
 import com.xiaomi.mimcdemo.utils.LogUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainApplication extends Application {
@@ -41,7 +36,7 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        instance = this;
         context = getApplicationContext();
 
         MIMCLog.setLogger(new Logger() {
@@ -97,12 +92,6 @@ public class MainApplication extends Application {
         if (!ret) {
             LogUtil.e(TAG, "登录失败, 请检查网络...");
             Toast.makeText(this, "请检查网络后重试...", Toast.LENGTH_SHORT).show();
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            exit();
         }
         LogUtil.e(TAG, "Device SN is " + getSerial());
 
@@ -111,15 +100,13 @@ public class MainApplication extends Application {
 
         // SunmiMissCallManager 初始化
         SunmiMissCallManager.getInstance();
-        instance = this;
+
+        // ContactManager 初始化
+        ContactManager.getInstance();
     }
 
     public static Context getContext() {
         return context;
-    }
-
-    public void exit() {
-        System.exit(0);
     }
 
     @SuppressLint({"MissingPermission", "HardwareIds"})

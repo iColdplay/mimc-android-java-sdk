@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetBottom="@dimen/dialog_insert_margin"
+    android:insetTop="@dimen/dialog_insert_margin">
+    <shape android:shape="rectangle">
+        <solid android:color="#292E37" />
+        <corners android:radius="4dp" />
+    </shape>
+</inset>

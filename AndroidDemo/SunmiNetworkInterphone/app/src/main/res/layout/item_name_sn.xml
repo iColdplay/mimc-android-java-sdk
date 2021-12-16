@@ -21,7 +21,6 @@
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:background="@drawable/bg_shape_contact"
-            android:layout_below="@id/tv_recent"
             android:layout_width="match_parent"
             android:layout_height="67dp">
             <!-- Bottom View Start-->

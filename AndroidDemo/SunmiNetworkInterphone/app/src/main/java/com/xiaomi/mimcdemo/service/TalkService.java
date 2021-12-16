@@ -29,37 +29,7 @@ public class TalkService extends Service {
 
     private static final int FOREGROUND_CODE = 10000;
 
-    private static volatile String PTT_STATUS = "idle";
-    private final static String PTT_STATUS_IDLE = "idle";
-    private final static String PTT_STATUS_SPEAKING = "speaking";
-    private final static String PTT_STATUS_LISTENING = "listening";
 
-    private synchronized boolean isPttIdle(){
-        return PTT_STATUS.equals(PTT_STATUS_IDLE);
-    }
-
-    private synchronized boolean isPttSpeaking(){
-        return PTT_STATUS.equals(PTT_STATUS_SPEAKING);
-    }
-
-    private synchronized boolean ispPttListening(){
-        return PTT_STATUS.equals(PTT_STATUS_LISTENING);
-    }
-
-    private synchronized boolean setPttIdle(){
-        PTT_STATUS = PTT_STATUS_IDLE;
-        return true;
-    }
-
-    private synchronized boolean setPttSpeaking(){
-        PTT_STATUS = PTT_STATUS_SPEAKING;
-        return true;
-    }
-
-    private synchronized boolean setPttListening(){
-        PTT_STATUS = PTT_STATUS_LISTENING;
-        return true;
-    }
 
     public static final String ACTION_PTT_KEY_DOWN = "com.sunmi.ptt.key.down"; //侧键按下
     public static final String ACTION_PTT_KEY_UP = "com.sunmi.ptt.key.up"; //侧键松开

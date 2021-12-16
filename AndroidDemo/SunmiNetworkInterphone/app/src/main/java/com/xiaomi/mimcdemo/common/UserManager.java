@@ -1,7 +1,5 @@
 package com.xiaomi.mimcdemo.common;
 
-import android.os.Bundle;
-import android.os.Message;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
@@ -23,9 +21,9 @@ import com.xiaomi.mimc.data.RtsDataType;
 import com.xiaomi.mimcdemo.bean.ChatMsg;
 import com.xiaomi.mimcdemo.bean.Msg;
 import com.xiaomi.mimcdemo.listener.OnCallStateListener;
-import com.xiaomi.mimcdemo.ui.HomeActivity;
+import com.xiaomi.mimcdemo.manager.AudioEventManager;
+import com.xiaomi.mimcdemo.manager.SunmiMissCallManager;
 import com.xiaomi.mimcdemo.ui.MIMCApplication;
-import com.xiaomi.mimcdemo.ui.VoiceCallActivity;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
 import okhttp3.*;
@@ -271,23 +269,21 @@ public class UserManager {
     class RTSHandler implements MIMCRtsCallHandler {
         @Override
         public LaunchedResponse onLaunched(String fromAccount, String fromResource, long callId, byte[] appContent) {
+
+            LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 callId:      " + callId);
+            LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 fromAccount: " + fromAccount);
+            LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 fromResource:" + fromResource);
+            if(!AudioEventManager.getInstance().isPttIdle()){
+                LogUtil.e(TAG, "!!!!!!!!! 但是当前有通话事件在处理, 直接rejected当前的通话, 转入MissCallManager");
+                SunmiMissCallManager.getInstance().missCallHappened(fromAccount);
+                return new LaunchedResponse(false, "rejected");
+            }
+
             synchronized (lock) {
-
-                LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 callId:      " + callId);
-                LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 fromAccount: " + fromAccount);
-                LogUtil.e(TAG, "!!!!!!!!!新会话请求来了 fromResource:" + fromResource);
-
                 String callType = new String(appContent);
                 if (callType.equalsIgnoreCase("AUDIO")) {
-//                    VoiceCallActivity.actionStartActivity(MIMCApplication.getContext(), fromAccount, callId);
 
-                    Message message1 = Message.obtain();
-                    message1.what = HomeActivity.MSG_CALL_INCOMING;
-                    Bundle data = new Bundle();
-                    data.putString(CustomKeys.KEY_INCOMING_CALL_ACCOUNT, fromAccount);
-                    data.putLong(CustomKeys.KEY_INCOMING_CALL_ID, callId);
-                    message1.setData(data);
-                    HomeActivity.callHandler.sendMessage(message1);
+                    boolean ret = AudioEventManager.getInstance().sendMessageCallIncoming(fromAccount, callId);
 
                 } else if (callType.equalsIgnoreCase("VIDEO")) {
 

@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -125,10 +126,10 @@ public class HomeActivity extends Activity {
                     LogUtil.e(TAG, "Custom Name: " + name);
                     LogUtil.e(TAG, "SN is: " + sn);
                     boolean ret = ContactManager.getInstance().insertData(name, sn);
-                    if(ret){
+                    if (ret) {
                         Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
                         uiRefreshContact();
-                    }else {
+                    } else {
                         Toast.makeText(HomeActivity.this, "添加联系人失败, 请稍后再试", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -143,7 +144,7 @@ public class HomeActivity extends Activity {
                     uiRefreshContact();
                 }
 
-                if(msg.what == MSG_NEW_USER_NAME){
+                if (msg.what == MSG_NEW_USER_NAME) {
                     LogUtil.e(TAG, "HomeActivity new User title");
                     String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "");
                     binding.tvUserTitle.setText(name);
@@ -218,27 +219,22 @@ public class HomeActivity extends Activity {
     }
 
     private void uiRefreshContact() {
-//        LogUtil.e(TAG, "now ui refresh contact");
-//
-//        // 获取所有的联系人信息
-//        List<Contact> contacts = MainApplication.getInstance().queryData();
-//        if (contacts == null || contacts.size() == 0) {
-//            LogUtil.e(TAG, "no contact");
-//            binding.tvNoContact.setVisibility(View.VISIBLE);
-//            binding.rvContactList.setVisibility(View.GONE);
-//            return;
-//        }
-//
-//        contactAdapter = new ContactAdapter(contacts);
-//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(HomeActivity.this);
-//        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//        binding.rvContactList.setLayoutManager(linearLayoutManager);
-//        binding.rvContactList.setAdapter(contactAdapter);
-//        binding.tvNoContact.setVisibility(View.GONE);
-//        binding.rvContactList.setVisibility(View.VISIBLE);
-//
-//        binding.llContactList.invalidate();
+        LogUtil.e(TAG, "now ui refresh contact");
 
+        // 获取所有的联系人信息
+        List<Contact> contacts = ContactManager.getInstance().queryData();
+        if (contacts == null || contacts.size() == 0) {
+            LogUtil.e(TAG, "no contact");
+            return;
+        }
+
+        // 刷新RecycleView
+        contactAdapter = new ContactAdapter(contacts);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(HomeActivity.this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        binding.rvContactList.setLayoutManager(linearLayoutManager);
+        binding.rvContactList.setAdapter(contactAdapter);
+        binding.rvContactList.invalidate();
     }
 
     @Override
@@ -249,13 +245,13 @@ public class HomeActivity extends Activity {
                 String qrInfo = data.getStringExtra(CustomKeys.KEY_QR_INFO);
                 LogUtil.e(TAG, "qrInfo is: " + qrInfo);
                 // 展示qr
-                if(qrInfo.contains("my_qr")){
+                if (qrInfo.contains("my_qr")) {
                     binding.llIdInfo.performClick();
                     return;
                 }
 
                 // 手动add
-                if(qrInfo.contains("hand_add")){
+                if (qrInfo.contains("hand_add")) {
                     EditHandAddFragment fragment = EditHandAddFragment.newInstance();
                     fragment.show(getFragmentManager(), EditHandAddFragment.TAG);
                     return;
@@ -272,13 +268,14 @@ public class HomeActivity extends Activity {
                     return;
                 }
 
-                boolean result = ContactManager.getInstance().insertData(customName, sn);
-                if (result) {
-                    Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
-                    Message message1 = Message.obtain();
-                    message1.what = MSG_ADD_CONTACT;
-                    mainHandler.sendMessage(message1);
-                }
+                Message message1 = Message.obtain();
+                message1.what = MSG_ADD_CONTACT;
+                Bundle contact = new Bundle();
+                contact.putString(CustomKeys.KEY_USER_NAME, customName);
+                contact.putString(CustomKeys.KEY_SN, sn);
+                message1.setData(contact);
+                mainHandler.sendMessage(message1);
+
             } else {
                 LogUtil.e(TAG, "activity result is null");
                 Toast.makeText(HomeActivity.this, "未获取到联系人信息", Toast.LENGTH_SHORT).show();
@@ -318,11 +315,14 @@ public class HomeActivity extends Activity {
             binding.tvModify.setVisibility(View.GONE);
             binding.verticalDivider.setVisibility(View.GONE);
             binding.imageNoContact.setVisibility(View.VISIBLE);
-        }else {
+            binding.tvNoContact.setVisibility(View.VISIBLE);
+        } else {
             binding.imageNoContact.setVisibility(View.GONE);
             binding.verticalDivider.setVisibility(View.VISIBLE);
             binding.tvModify.setVisibility(View.VISIBLE);
+            binding.tvNoContact.setVisibility(View.GONE);
         }
+        uiRefreshContact();
     }
 
     @Override
@@ -377,7 +377,6 @@ public class HomeActivity extends Activity {
             activity.getWindow().setStatusBarColor(getColor(R.color.design_background));
         }
     }
-
 
 
 }

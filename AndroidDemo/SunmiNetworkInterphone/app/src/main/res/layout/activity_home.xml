@@ -109,6 +109,7 @@
                     android:layout_height="100dp"/>
                 
                 <TextView
+                    android:id="@+id/tv_no_contact"
                     android:layout_marginStart="145dp"
                     android:layout_marginTop="418dp"
                     android:layout_width="70dp"
@@ -136,7 +137,6 @@
                     android:background="@drawable/vertical_divider_item"
                     android:layout_width="1dp"
                     android:layout_height="16dp"/>
-
 
                 <TextView
                     android:id="@+id/tv_modify"

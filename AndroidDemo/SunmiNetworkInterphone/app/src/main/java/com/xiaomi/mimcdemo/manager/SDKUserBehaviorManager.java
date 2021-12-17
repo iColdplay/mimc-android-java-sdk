@@ -1,5 +1,7 @@
 package com.xiaomi.mimcdemo.manager;
 
+import android.widget.Toast;
+
 import com.tencent.mmkv.MMKV;
 import com.xiaomi.mimc.MIMCGroupMessage;
 import com.xiaomi.mimc.MIMCMessage;
@@ -194,6 +196,33 @@ public class SDKUserBehaviorManager {
         return user.login();
     }
 
-
+    /***
+     * 小米SDK User用户的重登录逻辑
+     * @param newName
+     * @return
+     */
+    public synchronized boolean reLoginSDKUser(String newName){
+        LogUtil.e(TAG, "reLoginSDKUser");
+        if(!NetWorkUtils.isNetwork(Objects.requireNonNull(AppUtil.getContext()))){
+            LogUtil.e(TAG, "没有网络, 请检查网络后重试");
+            return false;
+        }
+        if(isUserOnline) {
+            MIMCUser user = userManager.getMIMCUser();
+            boolean ret = user.logout();
+            if (!ret) {
+                Toast.makeText(AppUtil.getContext(), "网络异常, 请稍后再试", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+        MIMCUser newUser = userManager.newMIMCUser(MainApplication.getInstance().getSerial() + newName);
+        boolean newLoginRet = newUser.login();
+        if(!newLoginRet){
+            Toast.makeText(AppUtil.getContext(), "网络异常, 请稍后再试", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        mmkv.putString(CustomKeys.KEY_USER_NAME, newName);
+        return true;
+    }
 
 }

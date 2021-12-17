@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.tencent.mmkv.MMKV;
 import com.xiaomi.mimcdemo.common.CustomKeys;
+import com.xiaomi.mimcdemo.databinding.DesignQrcodeDialogBinding;
 import com.xiaomi.mimcdemo.databinding.DialogQrcodeBinding;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 import com.xiaomi.mimcdemo.utils.QrCodeUtil;
@@ -19,7 +20,7 @@ public class QRCodeFragment extends BaseDialogFragment {
     private static final int width = 250;
     private static final int height = 250;
 
-    private DialogQrcodeBinding binding;
+    private DesignQrcodeDialogBinding binding;
 
     public static QRCodeFragment newInstance() {
         QRCodeFragment dialog = new QRCodeFragment();
@@ -31,11 +32,13 @@ public class QRCodeFragment extends BaseDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (binding == null) {
-            String qrInfo = MainApplication.getInstance().getSerial() + MMKV.defaultMMKV().getString(CustomKeys.KEY_USER_NAME, "");
+            binding = DesignQrcodeDialogBinding.inflate(inflater, container, false);
+            String qrInfo = MainApplication.getInstance().getSerial() + MMKV.defaultMMKV().getString(CustomKeys.KEY_USER_NAME, "默认名称");
             LogUtil.e(TAG, "qrInfo is: " + qrInfo);
-            binding = DialogQrcodeBinding.inflate(inflater, container, false);
+            String id = MainApplication.getInstance().getSerial();
+            binding.tvMyId.setText("我的ID: " + id);
             binding.imageQrcode.setImageBitmap(QrCodeUtil.createQRCodeBitmap(qrInfo, width, height));
-            binding.btnOk.setOnClickListener(new View.OnClickListener() {
+            binding.tvCancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dismiss();

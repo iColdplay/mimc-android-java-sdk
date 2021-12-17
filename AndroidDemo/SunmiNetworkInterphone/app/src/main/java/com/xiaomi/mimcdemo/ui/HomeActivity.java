@@ -54,6 +54,7 @@ public class HomeActivity extends Activity {
     public static final int MSG_LOGOUT = 1001;
     public static final int MSG_ADD_CONTACT = 1002;
     public static final int MSG_DELETE_CONTACT = 1003;
+    public static final int MSG_NEW_USER_NAME = 1004;
 
     private ContactAdapter contactAdapter;
 
@@ -130,6 +131,12 @@ public class HomeActivity extends Activity {
 //                    }
                     uiRefreshContact();
                 }
+
+                if(msg.what == MSG_NEW_USER_NAME){
+                    LogUtil.e(TAG, "HomeActivity new User title");
+                    String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "");
+                    binding.tvUserTitle.setText(name);
+                }
             }
         };
 
@@ -154,6 +161,39 @@ public class HomeActivity extends Activity {
                 HomeActivity.this.startActivity(intentGoSettingCustomKey);
             }
         });
+        // 展示本机联系人信息
+        binding.llIdInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 展示id+名称的二维码
+                QRCodeFragment qrCodeFragment = QRCodeFragment.newInstance();
+                qrCodeFragment.show(getFragmentManager(), QRCodeFragment.TAG);
+            }
+        });
+        // 扫码添加联系人
+        binding.tvAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, ScanActivity.class);
+                startActivityForResult(intent, ACTIVITY_RESULT_SCAN);
+            }
+        });
+        // 点击更改User title
+        binding.tvUserTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditUserTitleFragment fragment = EditUserTitleFragment.newInstance();
+                fragment.show(getFragmentManager(), EditUserTitleFragment.TAG);
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // user title 初始化
+        String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "默认名称");
+        binding.tvUserTitle.setText(name);
     }
 
     private void uiRefreshContact() {
@@ -198,13 +238,13 @@ public class HomeActivity extends Activity {
                     return;
                 }
 
-//                boolean result = MainApplication.getInstance().insertData(customName, sn);
-//                if (result) {
-//                    Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
-//                    Message message1 = Message.obtain();
-//                    message1.what = MSG_ADD_CONTACT;
-//                    mainHandler.sendMessage(message1);
-//                }
+                boolean result = ContactManager.getInstance().insertData(customName, sn);
+                if (result) {
+                    Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
+                    Message message1 = Message.obtain();
+                    message1.what = MSG_ADD_CONTACT;
+                    mainHandler.sendMessage(message1);
+                }
             } else {
                 LogUtil.e(TAG, "activity result is null");
                 Toast.makeText(HomeActivity.this, "未获取到联系人信息", Toast.LENGTH_SHORT).show();
@@ -298,5 +338,7 @@ public class HomeActivity extends Activity {
             activity.getWindow().setStatusBarColor(getColor(R.color.design_background));
         }
     }
+
+
 
 }

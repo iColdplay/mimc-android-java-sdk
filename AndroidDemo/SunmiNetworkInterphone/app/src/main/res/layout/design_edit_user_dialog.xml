@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="312dp"
+        android:layout_height="192dp"
+        android:layout_gravity="center"
+        android:background="@drawable/design_dialog_background">
+
+        <TextView
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="请输入昵称"
+            android:textColor="#ff333c4f"
+            android:textSize="16sp"
+            />
+
+        <LinearLayout
+            android:background="@drawable/design_edit_ll_background"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:layout_height="44dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="20dp"
+            android:layout_width="264dp">
+
+            <EditText
+                android:background="@null"
+                android:id="@+id/et_user"
+                android:layout_width="240dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="11dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="11dp"
+                android:hint="最多8个文字"
+                android:textColor="#ff565e6f"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:background="@drawable/design_dialog_button_background"
+            android:id="@+id/tv_finish_modify"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="完成"
+            android:textColor="#ff333c4f"
+            android:textSize="16sp"
+            />
+
+<!--        <View-->
+<!--            android:id="@+id/v_bottom_divider"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="@dimen/divider_width"-->
+<!--            android:layout_marginTop="24dp"-->
+<!--            android:background="@color/dividerColor" />-->
+
+<!--        <Button-->
+<!--            android:textColor="@color/colorWhite"-->
+<!--            android:background="@color/colorPrimaryDark"-->
+<!--            android:id="@+id/btn_ok"-->
+<!--            style="@style/DialogPositiveButton"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="确定" />-->
+
+    </LinearLayout>
+</layout>

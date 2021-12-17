@@ -132,6 +132,20 @@ public class HomeActivity extends Activity {
         // 显示ID信息
         String id = MainApplication.getInstance().getSerial();
         binding.tvIdInfo.setText("ID: " + id);
+
+        initView();
+    }
+
+    private void initView(){
+        // 快捷侧边按键设置跳转
+        final Intent intentGoSettingCustomKey = new Intent();
+        intentGoSettingCustomKey.setAction("com.sunmi.toolbox.customkey");
+        binding.btnSetCustomKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HomeActivity.this.startActivity(intentGoSettingCustomKey);
+            }
+        });
     }
 
     private void uiRefreshContact() {

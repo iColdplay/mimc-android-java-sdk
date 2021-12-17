@@ -119,7 +119,18 @@ public class HomeActivity extends Activity {
 
                 if (msg.what == MSG_ADD_CONTACT) {
                     LogUtil.e(TAG, "HomeActivity add contact");
-                    uiRefreshContact();
+                    Bundle data = msg.getData();
+                    String name = data.getString(CustomKeys.KEY_USER_NAME);
+                    String sn = data.getString(CustomKeys.KEY_SN);
+                    LogUtil.e(TAG, "Custom Name: " + name);
+                    LogUtil.e(TAG, "SN is: " + sn);
+                    boolean ret = ContactManager.getInstance().insertData(name, sn);
+                    if(ret){
+                        Toast.makeText(HomeActivity.this, "添加联系人成功", Toast.LENGTH_SHORT).show();
+                        uiRefreshContact();
+                    }else {
+                        Toast.makeText(HomeActivity.this, "添加联系人失败, 请稍后再试", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 if (msg.what == MSG_DELETE_CONTACT) {
@@ -186,6 +197,14 @@ public class HomeActivity extends Activity {
                 fragment.show(getFragmentManager(), EditUserTitleFragment.TAG);
             }
         });
+        // 点击添加联系人
+        binding.tvAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(HomeActivity.this, ScanActivity.class);
+                startActivityForResult(it, ACTIVITY_RESULT_SCAN);
+            }
+        });
     }
 
     @Override
@@ -227,6 +246,19 @@ public class HomeActivity extends Activity {
             if (data != null) {
                 String qrInfo = data.getStringExtra(CustomKeys.KEY_QR_INFO);
                 LogUtil.e(TAG, "qrInfo is: " + qrInfo);
+                // 展示qr
+                if(qrInfo.contains("my_qr")){
+                    binding.llIdInfo.performClick();
+                    return;
+                }
+
+                // 手动add
+                if(qrInfo.contains("hand_add")){
+                    EditHandAddFragment fragment = EditHandAddFragment.newInstance();
+                    fragment.show(getFragmentManager(), EditHandAddFragment.TAG);
+                    return;
+                }
+
                 String sn = qrInfo.substring(0, 16);
                 String customName = qrInfo.replaceAll(sn, "");
                 LogUtil.e(TAG, "SN is: " + sn);
@@ -251,25 +283,25 @@ public class HomeActivity extends Activity {
             }
         }
 
-        if (requestCode == ACTIVITY_RESULT_ADD_CONTACT) {
-            if (data != null) {
-                String name = data.getStringExtra(CustomKeys.KEY_USER_NAME);
-                String sn = data.getStringExtra(CustomKeys.KEY_SN);
-
-                LogUtil.e(TAG, "Custom Name: " + name);
-                LogUtil.e(TAG, "SN is: " + sn);
-
-//                boolean ret = MainApplication.getInstance().insertData(name, sn);
-//                if (ret) {
-//                    Message message1 = Message.obtain();
-//                    message1.what = MSG_ADD_CONTACT;
-//                    mainHandler.sendMessage(message1);
-//                }
-            } else {
-                LogUtil.e(TAG, "add result is null");
-                Toast.makeText(HomeActivity.this, "取消增加联系人", Toast.LENGTH_SHORT).show();
-            }
-        }
+//        if (requestCode == ACTIVITY_RESULT_ADD_CONTACT) {
+//            if (data != null) {
+//                String name = data.getStringExtra(CustomKeys.KEY_USER_NAME);
+//                String sn = data.getStringExtra(CustomKeys.KEY_SN);
+//
+//                LogUtil.e(TAG, "Custom Name: " + name);
+//                LogUtil.e(TAG, "SN is: " + sn);
+//
+////                boolean ret = MainApplication.getInstance().insertData(name, sn);
+////                if (ret) {
+////                    Message message1 = Message.obtain();
+////                    message1.what = MSG_ADD_CONTACT;
+////                    mainHandler.sendMessage(message1);
+////                }
+//            } else {
+//                LogUtil.e(TAG, "add result is null");
+//                Toast.makeText(HomeActivity.this, "取消增加联系人", Toast.LENGTH_SHORT).show();
+//            }
+//        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

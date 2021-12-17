@@ -49,6 +49,5 @@ public class EditUserTitleFragment extends BaseDialogFragment{
             });
         }
         return binding.getRoot();
-
     }
 }

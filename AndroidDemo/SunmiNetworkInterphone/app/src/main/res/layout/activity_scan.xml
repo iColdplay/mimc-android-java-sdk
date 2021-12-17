@@ -9,33 +9,73 @@
 
     <LinearLayout
         android:id="@+id/cl_container"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorBg" >
+            android:background="@mipmap/surface_musk">
 
-            <SurfaceView
-                android:id="@+id/surface_view"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
+
+                <SurfaceView
+                    android:id="@+id/surface_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@mipmap/surface_musk" />
+            </FrameLayout>
+
+            <ImageView
+                android:src="@mipmap/to_left"
+                android:id="@+id/image_to_left"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="52dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"/>
+
+            <TextView
+                android:layout_marginStart="52dp"
+                android:layout_marginTop="46dp"
+                android:layout_width="96dp"
+                android:layout_height="28dp"
+                android:text="添加"
+                android:textColor="#ffffffff"
+                android:textSize="20sp"
+                />
+
+            <ImageView
+                android:src="@mipmap/my_qr"
+                android:id="@+id/image_my_qr"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="602dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"/>
+
+            <ImageView
+                android:src="@mipmap/hand_add"
+                android:id="@+id/image_hand_add"
+                android:layout_marginStart="250dp"
+                android:layout_marginTop="602dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"/>
+
             <TextView
                 android:id="@+id/tv"
-                android:layout_height="match_parent"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:textColor="@color/colorText"
-                android:visibility="visible"
-                />
+                android:visibility="visible" />
+
             <ImageView
                 android:id="@+id/scan_line"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_scan_line"
-                />
+                android:background="@mipmap/scan_line" />
 
         </RelativeLayout>
     </LinearLayout>

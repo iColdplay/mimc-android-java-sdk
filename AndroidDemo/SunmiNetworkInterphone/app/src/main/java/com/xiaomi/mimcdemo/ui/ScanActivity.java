@@ -5,12 +5,17 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.databinding.DataBindingUtil;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
@@ -45,7 +50,7 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setNBSBColor(this);
         binding= DataBindingUtil.setContentView(this, R.layout.activity_scan);
 
         scanner = new ImageScanner();//创建扫描器
@@ -79,11 +84,38 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
             autoFocusHandler = new Handler();
 
         binding.scanLine.setAnimation(getAnimation());
+
+        // 展示qr
+        binding.imageMyQr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent result = new Intent();
+                result.putExtra(CustomKeys.KEY_QR_INFO, "my_qr");
+                setResult(HomeActivity.ACTIVITY_RESULT_SCAN, result);
+                finish();
+            }
+        });
+
+        // 手动添加
+        binding.imageHandAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent result = new Intent();
+                result.putExtra(CustomKeys.KEY_QR_INFO, "hand_add");
+                setResult(HomeActivity.ACTIVITY_RESULT_SCAN, result);
+                finish();
+            }
+        });
     }
 
     public TranslateAnimation getAnimation(){
-        TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE, 0f,TranslateAnimation.ABSOLUTE,0f, TranslateAnimation.RELATIVE_TO_PARENT, 0f,
-                TranslateAnimation.RELATIVE_TO_PARENT, 1.0f);
+        TranslateAnimation mAnimation = new TranslateAnimation(TranslateAnimation.ABSOLUTE,
+                0f,
+                TranslateAnimation.ABSOLUTE,0f,
+                TranslateAnimation.RELATIVE_TO_PARENT,
+                0f,
+                TranslateAnimation.RELATIVE_TO_PARENT,
+                1.0f);
         mAnimation.setDuration(3000);
         mAnimation.setRepeatCount(-1);
         mAnimation.setRepeatMode(Animation. RESTART);
@@ -181,4 +213,22 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
             mCamera.autoFocus(autoFocusCallback);
         }
     };
+
+    /***
+     * 修改NavigationBar背景颜色 可自定义颜色
+     * */
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void setNBSBColor(Activity activity) {
+        Window window = activity.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setNavigationBarColor(activity.getResources().getColor(R.color.transparent));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            View decorView = activity.getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            activity.getWindow().setStatusBarColor(getColor(R.color.transparent));
+        }
+    }
+
 }

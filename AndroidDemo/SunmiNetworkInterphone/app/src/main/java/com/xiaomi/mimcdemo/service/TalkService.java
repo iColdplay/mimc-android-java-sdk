@@ -109,7 +109,7 @@ public class TalkService extends Service {
             notificationManager.createNotificationChannel(channel);
             builder = new NotificationCompat.Builder(this, "foregroundService");
         } else {
-            builder = new NotificationCompat.Builder(this, null);
+            builder = new NotificationCompat.Builder(this);
         }
 
         Intent i = new Intent(this, HomeActivity.class);

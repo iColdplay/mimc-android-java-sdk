@@ -23,13 +23,16 @@ import android.widget.Toast;
 import com.tencent.mmkv.MMKV;
 import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.common.CustomKeys;
+import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.ActivityHomeBinding;
+import com.xiaomi.mimcdemo.manager.ContactManager;
 import com.xiaomi.mimcdemo.service.TalkService;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class HomeActivity extends Activity {
@@ -85,6 +88,11 @@ public class HomeActivity extends Activity {
         super.onCreate(savedInstanceState);
         LogUtil.e(TAG, "onCreate()");
 
+        Intent serviceIntent = new Intent(this, TalkService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        }
+
         Intent bindIntent = new Intent(this, TalkService.class);
         bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
 
@@ -136,7 +144,7 @@ public class HomeActivity extends Activity {
         initView();
     }
 
-    private void initView(){
+    private void initView() {
         // 快捷侧边按键设置跳转
         final Intent intentGoSettingCustomKey = new Intent();
         intentGoSettingCustomKey.setAction("com.sunmi.toolbox.customkey");
@@ -229,6 +237,13 @@ public class HomeActivity extends Activity {
     protected void onResume() {
         super.onResume();
         LogUtil.e(TAG, "onResume()");
+        // 检查是否有联系人
+        List<Contact> contactList = ContactManager.getInstance().queryData();
+        if (contactList == null || contactList.size() == 0) {
+            LogUtil.e(TAG, "no contact");
+            binding.tvModify.setVisibility(View.GONE);
+            binding.verticalDivider.setVisibility(View.GONE);
+        }
     }
 
     @Override

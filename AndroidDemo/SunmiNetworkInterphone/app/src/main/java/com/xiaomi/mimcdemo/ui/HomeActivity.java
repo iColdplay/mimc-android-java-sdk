@@ -14,6 +14,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -26,6 +27,7 @@ import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.common.CustomKeys;
 import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.ActivityHomeBinding;
+import com.xiaomi.mimcdemo.databinding.DesignContactItemBinding;
 import com.xiaomi.mimcdemo.manager.ContactManager;
 import com.xiaomi.mimcdemo.service.TalkService;
 import com.xiaomi.mimcdemo.utils.LogUtil;
@@ -206,6 +208,40 @@ public class HomeActivity extends Activity {
                 startActivityForResult(it, ACTIVITY_RESULT_SCAN);
             }
         });
+        // 编辑模式触发
+        binding.tvModify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContactAdapter.shouldShowEditView = true;
+                uiRefreshContact();
+                binding.tvModifyCancel.setVisibility(View.VISIBLE);
+                binding.tvModifyConfirm.setVisibility(View.VISIBLE);
+            }
+        });
+        // 编辑模式底部按钮初始化
+        binding.tvModifyCancel.setVisibility(View.INVISIBLE);
+        binding.tvModifyCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // todo 取消编辑
+                ContactAdapter.shouldShowEditView = false;
+                uiRefreshContact();
+                binding.tvModifyCancel.setVisibility(View.INVISIBLE);
+                binding.tvModifyConfirm.setVisibility(View.INVISIBLE);
+            }
+        });
+        binding.tvModifyConfirm.setVisibility(View.INVISIBLE);
+        binding.tvModifyConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // todo 完成编辑
+
+                ContactAdapter.shouldShowEditView = false;
+                uiRefreshContact();
+                binding.tvModifyCancel.setVisibility(View.INVISIBLE);
+                binding.tvModifyConfirm.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     @Override
@@ -214,8 +250,6 @@ public class HomeActivity extends Activity {
         // user title 初始化
         String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "默认名称");
         binding.tvUserTitle.setText(name);
-
-
     }
 
     private void uiRefreshContact() {

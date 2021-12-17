@@ -13,7 +13,7 @@
         android:background="@color/design_background">
 
         <ImageView
-            android:id="@+id/image_check"
+            android:id="@+id/image_un_check"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="26dp"
@@ -21,12 +21,21 @@
             android:src="@mipmap/checkbox_unselect"
             android:visibility="gone" />
 
+        <ImageView
+            android:id="@+id/image_check"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="16dp"
+            android:src="@mipmap/checkbox_select"
+            android:visibility="gone" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginTop="10dp"
-            android:layout_toEndOf="@id/image_check"
+            android:layout_toEndOf="@id/image_un_check"
             android:background="@drawable/design_item_background">
 
             <TextView

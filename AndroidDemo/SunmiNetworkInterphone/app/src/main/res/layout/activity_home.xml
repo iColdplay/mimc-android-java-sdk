@@ -148,6 +148,33 @@
                     android:text="编辑"
                     android:textColor="#99EDEDED"
                     android:textSize="12sp" />
+
+                <TextView
+                    android:gravity="center"
+                    android:text="取消"
+                    android:textColor="#fff1f1f1"
+                    android:textSize="16sp"
+                    android:visibility="invisible"
+                    android:background="@drawable/design_modify_grey_background"
+                    android:id="@+id/tv_modify_cancel"
+                    android:layout_marginTop="640dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_width="150dp"
+                    android:layout_height="44dp"/>
+
+                <TextView
+                    android:gravity="center"
+                    android:text="删除"
+                    android:textColor="#ffff6000"
+                    android:textSize="16sp"
+                    android:visibility="invisible"
+                    android:background="@drawable/design_modify_orange_background"
+                    android:id="@+id/tv_modify_confirm"
+                    android:layout_marginTop="640dp"
+                    android:layout_marginStart="186dp"
+                    android:layout_width="150dp"
+                    android:layout_height="44dp"/>
+
             </RelativeLayout>
         </ScrollView>
     </RelativeLayout>

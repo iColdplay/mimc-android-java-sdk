@@ -32,6 +32,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         this.list = list;
     }
 
+    public volatile static boolean shouldShowEditView = false;
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -116,6 +118,37 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     binding.tvDisconnect.setVisibility(View.GONE);
                 }
             });
+
+            if(shouldShowEditView){
+                binding.imageUnCheck.setVisibility(View.VISIBLE);
+                binding.imageCheck.setVisibility(View.GONE);
+
+                binding.exLlDivider.setVisibility(View.GONE);
+                binding.exFlCall.setVisibility(View.GONE);
+                binding.exTvFloatBall.setVisibility(View.GONE);
+                binding.exFloatSwitch.setVisibility(View.GONE);
+
+                binding.tvConnect.setVisibility(View.GONE);
+                binding.tvDisconnect.setVisibility(View.GONE);
+            }else {
+                binding.imageCheck.setVisibility(View.GONE);
+                binding.imageCheck.setVisibility(View.GONE);
+            }
+            binding.imageCheck.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    binding.imageCheck.setVisibility(View.INVISIBLE);
+                    binding.imageUnCheck.setVisibility(View.VISIBLE);
+                }
+            });
+            binding.imageUnCheck.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    binding.imageUnCheck.setVisibility(View.INVISIBLE);
+                    binding.imageCheck.setVisibility(View.VISIBLE);
+                }
+            });
+
 //            binding.bottomWrapper.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {

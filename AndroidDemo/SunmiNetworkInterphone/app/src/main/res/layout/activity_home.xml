@@ -33,6 +33,13 @@
                         android:text="前台招待小娜"
                         android:textColor="#fff1f1f1"
                         android:textSize="20sp" />
+
+                    <ImageView
+                        android:layout_marginStart="6dp"
+                        android:layout_gravity="center"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@mipmap/ic_edit_nor"/>
                 </LinearLayout>
 
                 <TextView
@@ -84,6 +91,31 @@
                     android:textColor="#99EDEDED"
                     android:textSize="12sp"
                     />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_contact_list"
+                    android:layout_marginTop="141dp"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+                <ImageView
+                    android:id="@+id/image_no_contact"
+                    android:src="@mipmap/no_contact"
+                    android:layout_marginStart="130dp"
+                    android:layout_marginTop="306dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"/>
+                
+                <TextView
+                    android:layout_marginStart="145dp"
+                    android:layout_marginTop="418dp"
+                    android:layout_width="70dp"
+                    android:layout_height="20dp"
+                    android:text="暂无联系人"
+                    android:textColor="#ff565e6f"
+                    android:textSize="14sp"/>
 
                 <TextView
                     android:id="@+id/tv_add"

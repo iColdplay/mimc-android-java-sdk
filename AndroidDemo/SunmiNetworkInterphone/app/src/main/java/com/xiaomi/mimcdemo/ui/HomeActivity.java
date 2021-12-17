@@ -213,6 +213,8 @@ public class HomeActivity extends Activity {
         // user title 初始化
         String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "默认名称");
         binding.tvUserTitle.setText(name);
+
+
     }
 
     private void uiRefreshContact() {
@@ -315,6 +317,11 @@ public class HomeActivity extends Activity {
             LogUtil.e(TAG, "no contact");
             binding.tvModify.setVisibility(View.GONE);
             binding.verticalDivider.setVisibility(View.GONE);
+            binding.imageNoContact.setVisibility(View.VISIBLE);
+        }else {
+            binding.imageNoContact.setVisibility(View.GONE);
+            binding.verticalDivider.setVisibility(View.VISIBLE);
+            binding.tvModify.setVisibility(View.VISIBLE);
         }
     }
 

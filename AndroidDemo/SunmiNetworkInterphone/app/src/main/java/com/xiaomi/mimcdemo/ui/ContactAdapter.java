@@ -1,6 +1,8 @@
 package com.xiaomi.mimcdemo.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,8 @@ import com.xiaomi.mimcdemo.utils.LogUtil;
 import com.xiaomi.mimcdemo.utils.ViewUtil;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
@@ -54,6 +58,28 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     static class ViewHolder extends RecyclerView.ViewHolder {
         DesignContactItemBinding binding;
 
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        Handler uiHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if(binding != null){
+                    if(msg.what == 0) {
+                        binding.exLlDivider.setVisibility(View.VISIBLE);
+                        binding.exFlCall.setVisibility(View.VISIBLE);
+                        binding.exTvFloatBall.setVisibility(View.VISIBLE);
+                        binding.exFloatSwitch.setVisibility(View.VISIBLE);
+                        binding.tvConnect.setVisibility(View.GONE);
+                        binding.tvDisconnect.setVisibility(View.VISIBLE);
+                    }
+                    if(msg.what == 1){
+                        Toast.makeText(AppUtil.getContext(), "当前对方不在线,请稍后重试", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        };
+
         public ViewHolder(DesignContactItemBinding itemView) {
             super(itemView.getRoot());
             this.binding = itemView;
@@ -69,40 +95,55 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         LogUtil.e(TAG, "this is fast click, just ignore it ");
                         return;
                     }
-                    HomeActivity.pongSet.remove(contact.getSn() + contact.getCustomName());
-                    UserManager.getInstance().getMIMCUser().sendMessage(contact.getSn() + contact.getCustomName(), "PING".getBytes());
-                    boolean ret = false;
-                    long start = System.currentTimeMillis();
-                    while (System.currentTimeMillis() - start < ONLINE_DETECT_TIME_INTERVAL) {
-                        if (HomeActivity.pongSet.contains(contact.getSn() + contact.getCustomName())) {
-                            ret = true;
-                            break;
+                    final boolean[] ret = {false};
+                    final long start = System.currentTimeMillis();
+                    final Message message1 = HomeActivity.mainHandler.obtainMessage();
+                    message1.what = HomeActivity.MSG_SHOW_LOADING;
+                    message1.sendToTarget();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            HomeActivity.pongSet.remove(contact.getSn() + contact.getCustomName());
+                            UserManager.getInstance().getMIMCUser().sendMessage(contact.getSn() + contact.getCustomName(), "PING".getBytes());
+
+                            while (System.currentTimeMillis() - start < ONLINE_DETECT_TIME_INTERVAL) {
+                                if (HomeActivity.pongSet.contains(contact.getSn() + contact.getCustomName())) {
+                                    ret[0] = true;
+                                    break;
+                                }
+                                try {
+                                    Thread.sleep(50);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            // Test!!!!
+                            ret[0] = false;
+                            Message message2 = HomeActivity.mainHandler.obtainMessage();
+                            message2.what = HomeActivity.MSG_HIDE_LOADING;
+                            HomeActivity.mainHandler.sendMessage(message2);
+
+                            if (ret[0]) {
+                                LogUtil.e("PINGPONG", "对方在线! PINGNPONG耗时: " + (System.currentTimeMillis() - start) + "ms");
+//                                binding.exLlDivider.setVisibility(View.VISIBLE);
+//                                binding.exFlCall.setVisibility(View.VISIBLE);
+//                                binding.exTvFloatBall.setVisibility(View.VISIBLE);
+//                                binding.exFloatSwitch.setVisibility(View.VISIBLE);
+//                                binding.tvConnect.setVisibility(View.GONE);
+//                                binding.tvDisconnect.setVisibility(View.VISIBLE);
+                                Message message11 = uiHandler.obtainMessage();
+                                message11.what = 0;
+                                uiHandler.sendMessage(message11);
+                            } else {
+                                LogUtil.e("PINGPONG", "当前对方不在线,请稍后重试");
+                                Message message11 = uiHandler.obtainMessage();
+                                message11.what = 1;
+                                uiHandler.sendMessage(message11);
+                            }
                         }
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    // Test!!!!
-                    ret = true;
-
-                    if (ret) {
-                        LogUtil.e("PINGPONG", "对方在线! PINGNPONG耗时: " + (System.currentTimeMillis() - start) + "ms");
-
-                        binding.exLlDivider.setVisibility(View.VISIBLE);
-                        binding.exFlCall.setVisibility(View.VISIBLE);
-                        binding.exTvFloatBall.setVisibility(View.VISIBLE);
-                        binding.exFloatSwitch.setVisibility(View.VISIBLE);
-
-                        binding.tvConnect.setVisibility(View.GONE);
-                        binding.tvDisconnect.setVisibility(View.VISIBLE);
-
-                    } else {
-                        LogUtil.e("PINGPONG", "当前对方不在线,请稍后重试");
-                        Toast.makeText(AppUtil.getContext(), "当前对方不在线,请稍后重试", Toast.LENGTH_SHORT).show();
-                    }
+                    };
+                    executorService.execute(runnable);
                 }
             });
 

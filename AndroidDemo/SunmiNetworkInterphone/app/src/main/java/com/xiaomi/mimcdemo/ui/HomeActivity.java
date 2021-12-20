@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.mumu.dialog.MMLoading;
 import com.tencent.mmkv.MMKV;
 import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.common.CustomKeys;
@@ -60,6 +61,8 @@ public class HomeActivity extends Activity {
     public static final int MSG_ADD_CONTACT = 1002;
     public static final int MSG_DELETE_CONTACT = 1003;
     public static final int MSG_NEW_USER_NAME = 1004;
+    public static final int MSG_SHOW_LOADING = 1005;
+    public static final int MSG_HIDE_LOADING = 1006;
 
     private ContactAdapter contactAdapter;
 
@@ -90,6 +93,39 @@ public class HomeActivity extends Activity {
 
     // modify contact
     public static ArrayList<String> contactList = new ArrayList<>();
+
+    // loading dialog
+    private MMLoading mmLoading;
+
+    protected void showLoading(String msg, boolean outCancel) {
+        if (mmLoading == null) {
+            MMLoading.Builder builder = new MMLoading.Builder(this)
+                    .setMessage(msg)
+                    .setCancelable(false)
+                    .setCancelOutside(outCancel);
+            mmLoading = builder.create();
+        } else {
+            mmLoading.dismiss();
+            MMLoading.Builder builder = new MMLoading.Builder(this)
+                    .setMessage(msg)
+                    .setCancelable(false)
+                    .setCancelOutside(outCancel);
+            mmLoading = builder.create();
+        }
+        mmLoading.show();
+    }
+
+    /**
+     * 100ms, to dismiss the dialog
+     */
+    protected void hideLoading() {
+        long startDismiss = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startDismiss < 100) {
+            if (mmLoading != null && mmLoading.isShowing()) {
+                mmLoading.dismiss();
+            }
+        }
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -155,6 +191,16 @@ public class HomeActivity extends Activity {
                     LogUtil.e(TAG, "HomeActivity new User title");
                     String name = mmkv.getString(CustomKeys.KEY_USER_NAME, "");
                     binding.tvUserTitle.setText(name);
+                }
+
+                if(msg.what == MSG_SHOW_LOADING){
+                    LogUtil.e(TAG, "HomeActivity MSG_SHOW_LOADING handle start");
+                    showLoading("正在连线", false);
+                }
+
+                if(msg.what == MSG_HIDE_LOADING){
+                    LogUtil.e(TAG, "HomeActivity MSG_HIDE_LOADING handle start");
+                    hideLoading();
                 }
             }
         };

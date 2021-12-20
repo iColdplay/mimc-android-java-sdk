@@ -2,6 +2,7 @@ package com.xiaomi.mimcdemo.ui;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -49,6 +50,17 @@ public class BaseDialogFragment extends DialogFragment {
         if (window != null && !isInputModel()) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
     }
 
     protected boolean isInputModel() {

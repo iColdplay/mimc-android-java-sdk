@@ -247,6 +247,7 @@ public class HomeActivity extends Activity {
         binding.tvUserTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LogUtil.e(TAG, "now show EditUserTitleFragment UI");
                 EditUserTitleFragment fragment = EditUserTitleFragment.newInstance();
                 fragment.show(getFragmentManager(), EditUserTitleFragment.TAG);
             }

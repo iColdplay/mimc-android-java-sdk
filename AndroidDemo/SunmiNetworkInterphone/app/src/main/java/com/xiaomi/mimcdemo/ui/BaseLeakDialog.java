@@ -28,4 +28,5 @@ public class BaseLeakDialog extends Dialog {
     public void setOnDismissListener(@Nullable OnDismissListener listener) {
 
     }
+
 }

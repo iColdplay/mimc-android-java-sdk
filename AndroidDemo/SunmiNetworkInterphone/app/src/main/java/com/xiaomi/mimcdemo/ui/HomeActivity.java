@@ -444,6 +444,8 @@ public class HomeActivity extends Activity {
         if ((System.currentTimeMillis() - exitTime) > DOUBLE_CLICK_BACK_CHECK) {
             Toast.makeText(HomeActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
             exitTime = System.currentTimeMillis();
+        }else {
+            super.onBackPressed();
         }
     }
 

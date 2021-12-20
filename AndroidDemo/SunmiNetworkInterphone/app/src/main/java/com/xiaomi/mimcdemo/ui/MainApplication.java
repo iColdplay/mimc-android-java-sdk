@@ -6,6 +6,7 @@ import android.app.Application;
 
 import android.content.Context;
 
+import android.os.Vibrator;
 import android.provider.Settings;
 
 import android.util.Log;
@@ -112,6 +113,11 @@ public class MainApplication extends Application {
     @SuppressLint({"MissingPermission", "HardwareIds"})
     public String getSerial() {
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    public void vibrate() {
+        Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        vibrator.vibrate(100);
     }
 
 }

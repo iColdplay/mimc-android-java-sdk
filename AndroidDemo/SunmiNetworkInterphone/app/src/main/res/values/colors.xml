@@ -50,4 +50,6 @@
 
     <color name="design_background">#181B21</color>
     <color name="design_user_title_color">#F1F1F1</color>
+
+    <color name="yellow">#FFFF6600</color>
 </resources>

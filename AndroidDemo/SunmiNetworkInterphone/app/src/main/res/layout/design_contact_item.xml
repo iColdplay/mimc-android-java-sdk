@@ -144,7 +144,15 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"/>
 
+                <com.xiaomi.mimcdemo.ui.CustomVoiceView
+                    android:visibility="gone"
+                    android:background="#00000000"
+                    android:id="@+id/custom_voice_view"
+                    android:layout_width="147dp"
+                    android:layout_height="147dp"/>
+
                 <TextView
+                    android:id="@+id/tv_under_mic"
                     android:layout_marginTop="86dp"
                     android:layout_marginStart="50dp"
                     android:layout_width="48dp"

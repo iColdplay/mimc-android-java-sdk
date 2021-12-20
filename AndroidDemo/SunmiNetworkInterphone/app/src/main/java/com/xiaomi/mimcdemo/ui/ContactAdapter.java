@@ -1,5 +1,6 @@
 package com.xiaomi.mimcdemo.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -7,10 +8,12 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.xiaomi.mimc.example.LogUtils;
 import com.xiaomi.mimcdemo.common.CustomKeys;
 import com.xiaomi.mimcdemo.common.UserManager;
 import com.xiaomi.mimcdemo.database.Contact;
@@ -64,8 +67,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                if(binding != null){
-                    if(msg.what == 0) {
+                if (binding != null) {
+                    if (msg.what == 0) {
                         binding.exLlDivider.setVisibility(View.VISIBLE);
                         binding.exFlCall.setVisibility(View.VISIBLE);
                         binding.exTvFloatBall.setVisibility(View.VISIBLE);
@@ -73,19 +76,80 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         binding.tvConnect.setVisibility(View.GONE);
                         binding.tvDisconnect.setVisibility(View.VISIBLE);
                     }
-                    if(msg.what == 1){
+                    if (msg.what == 1) {
                         Toast.makeText(AppUtil.getContext(), "当前对方不在线,请稍后重试", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         };
 
+        private static final int MSG_GO_SPEAK = 1001;
+        private static final int MSG_STOP_SPEAK = 1002;
+
+        Handler longTouchHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if (msg.what == MSG_GO_SPEAK) {
+                    binding.customVoiceView.setVisibility(View.VISIBLE);
+                    binding.customVoiceView.startAni();
+                    binding.tvUnderMic.setText("正在对讲");
+                    MainApplication.getInstance().vibrate();
+                }
+
+                if (msg.what == MSG_STOP_SPEAK) {
+                    binding.customVoiceView.stopAni();
+                    binding.customVoiceView.setVisibility(View.INVISIBLE);
+                    binding.tvUnderMic.setText("按住对讲");
+                    isLongTouchHandled = false;
+                    MainApplication.getInstance().vibrate();
+                }
+            }
+        };
+
+        private void send100msToActivateSpeak() {
+            Message message1 = longTouchHandler.obtainMessage();
+            message1.what = MSG_GO_SPEAK;
+            longTouchHandler.sendMessageDelayed(message1, 500);
+        }
+
+        private void cancelActivateSpeak() {
+            longTouchHandler.removeMessages(MSG_GO_SPEAK);
+        }
+
+        private void sendMessageStopSpeak() {
+            Message message1 = longTouchHandler.obtainMessage();
+            message1.what = MSG_STOP_SPEAK;
+            longTouchHandler.sendMessage(message1);
+        }
+
         public ViewHolder(DesignContactItemBinding itemView) {
             super(itemView.getRoot());
             this.binding = itemView;
         }
 
+        volatile boolean isLongTouchHandled = false;
+
+        private final View.OnTouchListener touchListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        send100msToActivateSpeak();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        cancelActivateSpeak();
+                        sendMessageStopSpeak();
+                        break;
+                }
+                return true;
+            }
+        };
+
+        @SuppressLint("ClickableViewAccessibility")
         void bind(final Contact contact) {
+            binding.imageNormalBack.setOnTouchListener(touchListener);
             binding.contactName.setText(contact.getCustomName());
             binding.contactId.setText("ID: " + contact.getSn());
             binding.tvConnect.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +183,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                             }
 
                             // Test!!!!
-                            ret[0] = false;
+                            ret[0] = true;
                             Message message2 = HomeActivity.mainHandler.obtainMessage();
                             message2.what = HomeActivity.MSG_HIDE_LOADING;
                             HomeActivity.mainHandler.sendMessage(message2);
@@ -160,7 +224,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 }
             });
 
-            if(shouldShowEditView){
+            if (shouldShowEditView) {
                 binding.imageUnCheck.setVisibility(View.VISIBLE);
                 binding.imageCheck.setVisibility(View.GONE);
 
@@ -171,7 +235,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
                 binding.tvConnect.setVisibility(View.GONE);
                 binding.tvDisconnect.setVisibility(View.GONE);
-            }else {
+            } else {
                 binding.imageCheck.setVisibility(View.GONE);
                 binding.imageUnCheck.setVisibility(View.GONE);
             }

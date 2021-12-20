@@ -1,5 +1,6 @@
 package com.xiaomi.mimcdemo.ui;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.Nullable;
@@ -61,4 +62,8 @@ public class EditHandAddFragment extends BaseDialogFragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+    }
 }

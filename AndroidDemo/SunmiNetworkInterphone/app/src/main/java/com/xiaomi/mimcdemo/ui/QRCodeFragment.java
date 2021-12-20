@@ -1,7 +1,10 @@
 package com.xiaomi.mimcdemo.ui;
 
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,5 +50,6 @@ public class QRCodeFragment extends BaseDialogFragment {
         }
         return binding.getRoot();
     }
+
 
 }

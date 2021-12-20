@@ -32,6 +32,8 @@ import com.xiaomi.mimcdemo.manager.ContactManager;
 import com.xiaomi.mimcdemo.service.TalkService;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -85,6 +87,9 @@ public class HomeActivity extends Activity {
             LogUtil.e(TAG, "onServiceDisconnected()");
         }
     };
+
+    // modify contact
+    public static ArrayList<String> contactList = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -212,10 +217,15 @@ public class HomeActivity extends Activity {
         binding.tvModify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(binding.tvModifyCancel.getVisibility() == View.VISIBLE){
+                    LogUtil.e(TAG, "no more need to activate the modify mode, just return");
+                    return;
+                }
                 ContactAdapter.shouldShowEditView = true;
                 uiRefreshContact();
                 binding.tvModifyCancel.setVisibility(View.VISIBLE);
                 binding.tvModifyConfirm.setVisibility(View.VISIBLE);
+                contactList.clear();
             }
         });
         // 编辑模式底部按钮初始化
@@ -223,7 +233,7 @@ public class HomeActivity extends Activity {
         binding.tvModifyCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // todo 取消编辑
+
                 ContactAdapter.shouldShowEditView = false;
                 uiRefreshContact();
                 binding.tvModifyCancel.setVisibility(View.INVISIBLE);
@@ -234,8 +244,15 @@ public class HomeActivity extends Activity {
         binding.tvModifyConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // todo 完成编辑
 
+                if(contactList.size() != 0){
+                    for(String sn : contactList){
+                        boolean ret = ContactManager.getInstance().deleteDataBySN(sn);
+                        if(ret){
+                            LogUtil.e(TAG, "delete SN: " + sn + " successfully");
+                        }
+                    }
+                }
                 ContactAdapter.shouldShowEditView = false;
                 uiRefreshContact();
                 binding.tvModifyCancel.setVisibility(View.INVISIBLE);
@@ -259,10 +276,20 @@ public class HomeActivity extends Activity {
         List<Contact> contacts = ContactManager.getInstance().queryData();
         if (contacts == null || contacts.size() == 0) {
             LogUtil.e(TAG, "no contact");
+            binding.imageNoContact.setVisibility(View.VISIBLE);
+            binding.tvNoContact.setVisibility(View.VISIBLE);
+            binding.rvContactList.setVisibility(View.GONE);
+            binding.tvModify.setVisibility(View.GONE);
+            binding.verticalDivider.setVisibility(View.GONE);
             return;
         }
 
         // 刷新RecycleView
+        binding.tvNoContact.setVisibility(View.GONE);
+        binding.imageNoContact.setVisibility(View.GONE);
+        binding.rvContactList.setVisibility(View.VISIBLE);
+        binding.tvModify.setVisibility(View.VISIBLE);
+        binding.verticalDivider.setVisibility(View.VISIBLE);
         contactAdapter = new ContactAdapter(contacts);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(HomeActivity.this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

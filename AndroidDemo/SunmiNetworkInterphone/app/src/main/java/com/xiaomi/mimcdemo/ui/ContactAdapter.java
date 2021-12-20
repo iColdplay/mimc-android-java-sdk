@@ -132,13 +132,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 binding.tvDisconnect.setVisibility(View.GONE);
             }else {
                 binding.imageCheck.setVisibility(View.GONE);
-                binding.imageCheck.setVisibility(View.GONE);
+                binding.imageUnCheck.setVisibility(View.GONE);
             }
             binding.imageCheck.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     binding.imageCheck.setVisibility(View.INVISIBLE);
                     binding.imageUnCheck.setVisibility(View.VISIBLE);
+                    HomeActivity.contactList.remove(contact.getSn());
                 }
             });
             binding.imageUnCheck.setOnClickListener(new View.OnClickListener() {
@@ -146,6 +147,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 public void onClick(View v) {
                     binding.imageUnCheck.setVisibility(View.INVISIBLE);
                     binding.imageCheck.setVisibility(View.VISIBLE);
+                    HomeActivity.contactList.add(contact.getSn());
                 }
             });
 

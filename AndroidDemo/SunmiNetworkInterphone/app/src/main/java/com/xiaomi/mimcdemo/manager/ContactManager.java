@@ -45,6 +45,21 @@ public class ContactManager {
             return false;
         }
 
+        List<Contact> currentAllContact = queryData();
+        boolean matchAny = false;
+        if (currentAllContact != null && currentAllContact.size() > 0) {
+            for (Contact contact : currentAllContact) {
+                if (contact.getSn().equals(sn) && contact.getCustomName().equals(customName)) {
+                    matchAny = true;
+                    break;
+                }
+            }
+        }
+        if (matchAny) {
+            LogUtil.e(TAG, "contact already in, no more need to add");
+            return true;
+        }
+
         LogUtil.e(TAG, "gonna insert data, customName: " + customName + " sn: " + sn);
         ContentValues values = new ContentValues();
         values.put(DBHelper.CUSTOM_NAME, customName);

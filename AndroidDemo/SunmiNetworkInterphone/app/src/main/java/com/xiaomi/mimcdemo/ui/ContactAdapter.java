@@ -19,6 +19,7 @@ import com.xiaomi.mimcdemo.common.UserManager;
 import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.DesignContactItemBinding;
 import com.xiaomi.mimcdemo.databinding.ItemNameSnBinding;
+import com.xiaomi.mimcdemo.manager.AudioEventManager;
 import com.xiaomi.mimcdemo.manager.ContactManager;
 import com.xiaomi.mimcdemo.manager.SDKUserBehaviorManager;
 import com.xiaomi.mimcdemo.utils.AppUtil;
@@ -84,6 +85,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
         DesignContactItemBinding binding;
+        Contact contact;
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -122,6 +124,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     binding.customVoiceView.startAni();
                     binding.tvUnderMic.setText("正在对讲");
                     MainApplication.getInstance().vibrate();
+
+                    AudioEventManager.getInstance().sendMessageCallOutgoing(contact.getCustomName(), contact.getSn());
                 }
 
                 if (msg.what == MSG_STOP_SPEAK) {
@@ -130,6 +134,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     binding.tvUnderMic.setText("按住对讲");
                     isLongTouchHandled = false;
                     MainApplication.getInstance().vibrate();
+
+                    AudioEventManager.getInstance().sendMessageToStopCall();
                 }
             }
         };
@@ -142,8 +148,12 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             }
         };
 
-        private void send100msToActivateSpeak() {
+        private void send100msToActivateSpeak(String name, String sn) {
             Message message1 = longTouchHandler.obtainMessage();
+            Bundle data = new Bundle();
+            data.putString("name", name);
+            data.putString("sn", sn);
+            message1.setData(data);
             message1.what = MSG_GO_SPEAK;
             longTouchHandler.sendMessageDelayed(message1, 500);
         }
@@ -156,6 +166,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             Message message1 = longTouchHandler.obtainMessage();
             message1.what = MSG_STOP_SPEAK;
             longTouchHandler.sendMessage(message1);
+
+
         }
 
         public ViewHolder(DesignContactItemBinding itemView) {
@@ -170,7 +182,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        send100msToActivateSpeak();
+                        send100msToActivateSpeak(contact.getCustomName(), contact.getSn());
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
@@ -184,6 +196,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
         @SuppressLint("ClickableViewAccessibility")
         void bind(final Contact contact) {
+            this.contact = contact;
             int missCall = contact.getMissCall();
             if(missCall > 0){
                 binding.tvMissCall.setVisibility(View.VISIBLE);

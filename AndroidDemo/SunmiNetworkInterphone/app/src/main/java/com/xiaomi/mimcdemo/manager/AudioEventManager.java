@@ -11,7 +11,6 @@ import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -107,7 +106,6 @@ public class AudioEventManager {
 
                     audioPlayer.start();
 
-                    Toast.makeText(mContext, "对方正在说话", Toast.LENGTH_SHORT).show();
                     LogUtil.e(TAG, "----------MSG_CALL_INCOMING handle end  ---------");
                 }
 
@@ -115,7 +113,10 @@ public class AudioEventManager {
                     LogUtil.e(TAG, "----------MSG_FINISH handle start----------");
                     Bundle data = msg.getData();
                     String errorMessage = data.getString("msg");
-                    Toast.makeText(mContext, "通讯结束 " + errorMessage, Toast.LENGTH_SHORT).show();
+
+                    UserManager.getInstance().closeCall(callingOutID);
+                    callingOutID = -1;
+                    LogUtil.e(TAG, "通讯结束");
 
                     if (audioPlayer != null) {
                         audioPlayer.stop();
@@ -124,7 +125,7 @@ public class AudioEventManager {
                         audioRecorder.stop();
                     }
 
-                    setPttIdle(); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~状态转换为Speaking
+                    setPttIdle(); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~状态转换为IDLE
 
                     LogUtil.e(TAG, "----------MSG_FINISH handle end  ----------");
                 }
@@ -139,8 +140,11 @@ public class AudioEventManager {
                     LogUtil.e(TAG, "targetCountName: " + targetCountName);
                     callingOutID = UserManager.getInstance().dialCall(targetCountName, null, "AUDIO".getBytes());
                     if (callingOutID == -1) {
-                        Toast.makeText(mContext, "拨号失败, 请检查网络", Toast.LENGTH_SHORT).show();
+                        LogUtil.e(TAG, "拨号失败, 请检查网络");
                     }
+
+                    setPttSpeaking(); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~状态转换为SPEAKING
+
                     LogUtil.e(TAG, "----------MSG_CALL_GOING_OUT handle end  ----------");
                 }
 
@@ -164,7 +168,7 @@ public class AudioEventManager {
 
                     UserManager.getInstance().closeCall(callingOutID);
                     callingOutID = -1;
-                    Toast.makeText(mContext, "通讯结束 ", Toast.LENGTH_SHORT).show();
+                    LogUtil.e(TAG, "通讯结束");
 
                     if (audioPlayer != null) {
                         audioPlayer.stop();
@@ -254,12 +258,12 @@ public class AudioEventManager {
             LogUtil.e(TAG, "errMsg:   " + errMsg);
             if (accepted) {
                 // 对方接受语音请求
-                Toast.makeText(mContext, "您可以开始说话了", Toast.LENGTH_SHORT).show();
+                LogUtil.e(TAG, "您可以开始说话了");
                 // 开始录音并上送到服务器
                 startRecording();
             } else {
                 // 对方未接受语音请求
-                Toast.makeText(mContext, "当前用户正忙", Toast.LENGTH_SHORT).show();
+                LogUtil.e(TAG, "当前用户正忙");
             }
             LogUtil.e(TAG, "----------onAnswered() end  ----------");
         }
@@ -433,11 +437,9 @@ public class AudioEventManager {
     public synchronized boolean sendMessageCallIncoming(String fromAccount, long callId) {
         if (fromAccount == null || TextUtils.isEmpty(fromAccount)) {
             LogUtil.e(TAG, "param error");
-            Toast.makeText(mContext, "异常呼叫, 请稍后再试", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (!isPttIdle()) {
-            Toast.makeText(mContext, "网络对讲正忙, 请稍后再试", Toast.LENGTH_SHORT).show();
             return false;
         } else {
             LogUtil.e(TAG, "IDLE, but now CALL INCOMING");
@@ -453,6 +455,40 @@ public class AudioEventManager {
             message1.sendToTarget();
             return true;
         }
+    }
+
+    public synchronized boolean sendMessageCallOutgoing(String contactName, String sn){
+        if (contactName == null || TextUtils.isEmpty(contactName) || sn == null || TextUtils.isEmpty(sn)) {
+            LogUtil.e(TAG, "param error");
+            return false;
+        }
+        if (!isPttIdle()) {
+            return false;
+        } else {
+            LogUtil.e(TAG, "IDLE, but now CALL OUTGOING!");
+
+            setPttSpeaking(); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~状态变化为Listening
+
+            Message message1 = callHandler.obtainMessage();
+            message1.what = MSG_CALL_GOING_OUT;
+            Bundle data = new Bundle();
+            data.putString(CustomKeys.KEY_GOING_OUT_NAME, contactName);
+            data.putString(CustomKeys.KEY_GOING_OUT_ID, sn);
+
+            LogUtil.e(TAG, "KEY_GOING_OUT_NAME: " + contactName);
+            LogUtil.e(TAG, "KEY_GOING_OUT_ID: " + sn);
+
+            message1.setData(data);
+            message1.sendToTarget();
+            return true;
+        }
+    }
+
+    public synchronized boolean sendMessageToStopCall(){
+        Message message1 = Message.obtain();
+        message1.what = MSG_FINISH;
+        callHandler.sendMessage(message1);
+        return true;
     }
 
 }

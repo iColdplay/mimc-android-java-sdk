@@ -30,6 +30,7 @@ import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.ActivityHomeBinding;
 import com.xiaomi.mimcdemo.databinding.DesignContactItemBinding;
 import com.xiaomi.mimcdemo.manager.ContactManager;
+import com.xiaomi.mimcdemo.manager.SDKUserBehaviorManager;
 import com.xiaomi.mimcdemo.service.TalkService;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
@@ -323,6 +324,7 @@ public class HomeActivity extends Activity {
                 binding.tvModifyConfirm.setVisibility(View.INVISIBLE);
             }
         });
+
     }
 
     @Override

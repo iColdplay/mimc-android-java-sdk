@@ -177,7 +177,7 @@ public class SDKUserBehaviorManager {
     private UserManager userManager;
 
     private volatile boolean isUserOnline = false;
-    private boolean isOnline(){
+    public boolean isOnline(){
         return isUserOnline;
     }
 

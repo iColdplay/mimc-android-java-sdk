@@ -33,7 +33,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     private final List<Contact> list;
 
-    private static final long ONLINE_DETECT_TIME_INTERVAL = 1200L;
+    private static final long ONLINE_DETECT_TIME_INTERVAL = 7 * 1000L;
 
     public ContactAdapter(List<Contact> list) {
         this.list = list;
@@ -182,8 +182,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                                 }
                             }
 
-                            // Test!!!!
-                            ret[0] = true;
                             Message message2 = HomeActivity.mainHandler.obtainMessage();
                             message2.what = HomeActivity.MSG_HIDE_LOADING;
                             HomeActivity.mainHandler.sendMessage(message2);

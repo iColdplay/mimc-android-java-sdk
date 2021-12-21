@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.xiaomi.mimcdemo.R;
@@ -35,6 +36,9 @@ public class TalkService extends Service {
     public static final String ACTION_PTT_KEY_DOWN = "com.sunmi.ptt.key.down"; //侧键按下
     public static final String ACTION_PTT_KEY_UP = "com.sunmi.ptt.key.up"; //侧键松开
 
+    public static String contactName = "";
+    public static String contactSN = "";
+
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -47,17 +51,20 @@ public class TalkService extends Service {
                     return;
                 }
 
+                if(TextUtils.isEmpty(contactName) || TextUtils.isEmpty(contactSN)){
+                    LogUtil.e(TAG, "未连接用户!");
+                    Toast.makeText(AppUtil.getContext(), "请先连接一位用户", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (Objects.equals(intent.getAction(), ACTION_PTT_KEY_UP)) {
                     LogUtil.e(TAG, "TalkService receiver action KEY_UP");
+                    if (AudioEventManager.getInstance().isPttIdle()) {
+                        LogUtil.e(TAG, "idle, so nothing todo");
 
-                    if (AudioEventManager.getInstance().isPttSpeaking()) {
-                        LogUtil.e(TAG, "speaking should stop now");
-                        // todo stop speaking flow
                     } else {
-                        LogUtil.e(TAG, "not even speaking");
-                        Toast.makeText(TalkService.this, "Busy now, try it later", Toast.LENGTH_SHORT).show();
+                        AudioEventManager.getInstance().sendMessageToStopCall();
                     }
-
                     return;
                 }
 
@@ -65,7 +72,7 @@ public class TalkService extends Service {
                     LogUtil.e(TAG, "TalkService receiver action KEY_DOWN");
                     if (AudioEventManager.getInstance().isPttIdle()) {
                         LogUtil.e(TAG, "speaking should start now");
-                        // todo start speaking flow
+                        AudioEventManager.getInstance().sendMessageCallOutgoing(contactName, contactSN);
                     } else {
                         LogUtil.e(TAG, "not even idle, we won't do anything");
                         Toast.makeText(TalkService.this, "Busy now, try it later", Toast.LENGTH_SHORT).show();

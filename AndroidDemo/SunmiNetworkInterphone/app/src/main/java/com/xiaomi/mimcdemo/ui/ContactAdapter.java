@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.xiaomi.mimc.example.LogUtils;
@@ -19,9 +20,11 @@ import com.xiaomi.mimcdemo.common.UserManager;
 import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.DesignContactItemBinding;
 import com.xiaomi.mimcdemo.databinding.ItemNameSnBinding;
+import com.xiaomi.mimcdemo.floatball.PhoneFloatBall;
 import com.xiaomi.mimcdemo.manager.AudioEventManager;
 import com.xiaomi.mimcdemo.manager.ContactManager;
 import com.xiaomi.mimcdemo.manager.SDKUserBehaviorManager;
+import com.xiaomi.mimcdemo.service.TalkService;
 import com.xiaomi.mimcdemo.utils.AppUtil;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 import com.xiaomi.mimcdemo.utils.ViewUtil;
@@ -47,8 +50,45 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     public volatile static boolean isAnythingInConnection = false;
 
-    public List<Contact> getList(){
+    public List<Contact> getList() {
         return list;
+    }
+
+    private static PhoneFloatBall floatBall = new PhoneFloatBall(AppUtil.getContext());
+
+    private static Handler floatBallHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 0) {
+                floatBall.show();
+            }
+            if (msg.what == 1) {
+                floatBall.dismiss();
+            }
+            if (msg.what == 2) {
+                floatBall.setFloatBallTalking();
+            }
+            if (msg.what == 3) {
+                floatBall.setFloatBallNotTalking();
+            }
+        }
+    };
+
+    public static void showFloatBall() {
+        floatBallHandler.sendEmptyMessage(0);
+    }
+
+    public static void dismissFloatBall() {
+        floatBallHandler.sendEmptyMessage(1);
+    }
+
+    public static void setFloatBallTalking() {
+        floatBallHandler.sendEmptyMessage(2);
+    }
+
+    public static void setFloatBallNotTalking() {
+        floatBallHandler.sendEmptyMessage(3);
     }
 
     @NonNull
@@ -63,16 +103,16 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         viewHolder.bind(list.get(position));
     }
 
-    public void swapItem(int fromPosition,int toPosition){
+    public void swapItem(int fromPosition, int toPosition) {
         Collections.swap(list, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    public void missCallHappened(int fromPosition){
-        if(isAnythingInConnection){
+    public void missCallHappened(int fromPosition) {
+        if (isAnythingInConnection) {
             Collections.swap(list, fromPosition, 1);
             notifyItemMoved(fromPosition, 1);
-        }else {
+        } else {
             Collections.swap(list, fromPosition, 0);
             notifyItemMoved(fromPosition, 0);
         }
@@ -104,6 +144,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         binding.tvDisconnect.setVisibility(View.VISIBLE);
 
                         isAnythingInConnection = true;
+                        TalkService.contactName = contact.getCustomName();
+                        TalkService.contactSN = contact.getSn();
                     }
                     if (msg.what == 1) {
                         Toast.makeText(AppUtil.getContext(), "当前对方不在线,请稍后重试", Toast.LENGTH_SHORT).show();
@@ -140,7 +182,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             }
         };
 
-        Handler missCallHandler = new Handler(Looper.getMainLooper()){
+        Handler missCallHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -198,10 +240,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         void bind(final Contact contact) {
             this.contact = contact;
             int missCall = contact.getMissCall();
-            if(missCall > 0){
+            if (missCall > 0) {
                 binding.tvMissCall.setVisibility(View.VISIBLE);
                 binding.tvMissCall.setText("占线未接通: " + String.valueOf(missCall));
-            }else {
+            } else {
                 binding.tvMissCall.setVisibility(View.GONE);
             }
             binding.imageNormalBack.setOnTouchListener(touchListener);
@@ -210,7 +252,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             binding.tvConnect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(isAnythingInConnection){
+                    if (isAnythingInConnection) {
                         LogUtil.e(TAG, "something is in connection, so we just ignore any other connection");
                         return;
                     }
@@ -221,7 +263,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
                     // 足够条件触发连接, 则清除掉当前联系人的miss call数据
                     boolean clearRet = ContactManager.getInstance().updateMissCallTo0(contact.getCustomName(), contact.getSn());
-                    if(clearRet){
+                    if (clearRet) {
                         LogUtil.e(TAG, "miss call数据已清楚");
                     }
                     // 关闭miss call数据的显示
@@ -253,9 +295,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                             Message message2 = HomeActivity.mainHandler.obtainMessage();
                             message2.what = HomeActivity.MSG_HIDE_LOADING;
                             HomeActivity.mainHandler.sendMessage(message2);
-
-                            //Test!!!
-                            ret[0] = true;
 
                             if (ret[0]) {
                                 LogUtil.e("PINGPONG", "对方在线! PINGNPONG耗时: " + (System.currentTimeMillis() - start) + "ms");
@@ -292,6 +331,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     binding.tvDisconnect.setVisibility(View.GONE);
 
                     isAnythingInConnection = false;
+                    TalkService.contactName = null;
+                    TalkService.contactSN = null;
+                    floatBall.dismiss();
                 }
             });
 
@@ -327,58 +369,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 }
             });
 
-//            binding.bottomWrapper.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Message message1 = Message.obtain();
-//                    message1.what = HomeActivity.MSG_DELETE_CONTACT;
-//                    Bundle data = new Bundle();
-//                    data.putString(CustomKeys.KEY_SN, contact.getSn());
-//                    message1.setData(data);
-//                    HomeActivity.mainHandler.sendMessage(message1);
-//                }
-//            });
-//            binding.llSwipeInfo.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//
-//                    if (ViewUtil.isFastDoubleClick()) {
-//                        LogUtil.e("PINGPONG", "this is fast click, just ignore it ");
-//                        return;
-//                    }
-//
-////                    Message message1 = Message.obtain();
-////                    message1.what = HomeActivity.MSG_CALL_GOING_OUT;
-////                    Bundle data = new Bundle();
-////                    data.putString(CustomKeys.KEY_GOING_OUT_NAME, contact.getCustomName());
-////                    data.putString(CustomKeys.KEY_GOING_OUT_ID, contact.getSn());
-////                    message1.setData(data);
-////                    HomeActivity.callHandler.sendMessage(message1);
-//
-//                    HomeActivity.pongSet.remove(contact.getSn() + contact.getCustomName());
-//                    UserManager.getInstance().getMIMCUser().sendMessage(contact.getSn() + contact.getCustomName(), "PING".getBytes());
-//                    boolean ret = false;
-//                    long start = System.currentTimeMillis();
-//                    while (System.currentTimeMillis() - start < ONLINE_DETECT_TIME_INTERVAL) {
-//                        if (HomeActivity.pongSet.contains(contact.getSn() + contact.getCustomName())) {
-//                            ret = true;
-//                            break;
-//                        }
-//                        try {
-//                            Thread.sleep(50);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    if (ret) {
-//                        LogUtil.e("PINGPONG", "对方在线! PINGNPONG耗时: " + (System.currentTimeMillis() - start) + "ms");
-//                    } else {
-//                        LogUtil.e("PINGPONG", "对方不在线!!! 请稍后重试");
-//                    }
-//
-//                }
-//            });
+            // 悬浮球
+            binding.exFloatSwitch.setChecked(false);
+            binding.exFloatSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        floatBall.show();
+                    } else {
+                        floatBall.dismiss();
+                    }
+                }
+            });
+
             binding.executePendingBindings();
         }
     }

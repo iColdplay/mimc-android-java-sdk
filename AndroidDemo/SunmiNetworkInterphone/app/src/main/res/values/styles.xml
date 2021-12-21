@@ -121,4 +121,11 @@
         <item name="android:textSize">@dimen/button_text_size</item>
     </style>
 
+    <style name="Switch">
+        <item name="android:background">@null</item>
+        <item name="android:showText">false</item>
+        <item name="android:track">@drawable/sunmi_switch_track_anim</item>
+        <item name="android:thumb">@drawable/sunmi_switch_thumb</item>
+    </style>
+
 </resources>

@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearLayoutManager;
@@ -140,6 +141,13 @@ public class HomeActivity extends Activity {
             startForegroundService(serviceIntent);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(getApplicationContext())) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                startActivity(intent);
+            }
+        }
+
         Intent bindIntent = new Intent(this, TalkService.class);
         bindService(bindIntent, serviceConnection, BIND_AUTO_CREATE);
 
@@ -153,7 +161,8 @@ public class HomeActivity extends Activity {
                 "android.permission.READ_PHONE_STATE",
                 "android.permission.READ_PRIVILEGED_PHONE_STATE",
                 "android.permission.CAMERA",
-                "android.permission.MODIFY_AUDIO_SETTINGS"}, 0);
+                "android.permission.MODIFY_AUDIO_SETTINGS",
+                "android.permission.SYSTEM_ALERT_WINDOW"}, 0);
 
         mainHandler = new Handler(Looper.myLooper()) {
             @Override
@@ -205,7 +214,7 @@ public class HomeActivity extends Activity {
                     hideLoading();
                 }
 
-                if(msg.what == MSG_MISS_CALL_HAPPENED){
+                if (msg.what == MSG_MISS_CALL_HAPPENED) {
                     LogUtil.e(TAG, "HomeActivity MSG_MISS_CALL happened");
                     Bundle data = msg.getData();
                     String sn = data.getString(CustomKeys.KEY_SN);
@@ -214,13 +223,13 @@ public class HomeActivity extends Activity {
                     int fromPosition = -1;
                     for (int i = 0; i < contactList.size(); i++) {
                         contact = contactList.get(i);
-                        if(contact.getSn().equals(sn)){
+                        if (contact.getSn().equals(sn)) {
                             LogUtil.e(TAG, "we find target position");
                             fromPosition = i;
                             break;
                         }
                     }
-                    if(fromPosition != -1){
+                    if (fromPosition != -1) {
                         contactAdapter.missCallHappened(fromPosition);
                     }
                 }
@@ -385,6 +394,9 @@ public class HomeActivity extends Activity {
                 public void run() {
                     binding.rvContactList.setEnabled(true);
                     ContactAdapter.isAnythingInConnection = false;
+                    ContactAdapter.dismissFloatBall();
+                    TalkService.contactName = "";
+                    TalkService.contactSN = "";
                     uiRefreshContact();
                 }
             });
@@ -416,6 +428,7 @@ public class HomeActivity extends Activity {
 
         // 刷新RecycleView
         ContactAdapter.isAnythingInConnection = false;
+        ContactAdapter.dismissFloatBall();
         binding.tvNoContact.setVisibility(View.GONE);
         binding.imageNoContact.setVisibility(View.GONE);
         binding.rvContactList.setVisibility(View.VISIBLE);

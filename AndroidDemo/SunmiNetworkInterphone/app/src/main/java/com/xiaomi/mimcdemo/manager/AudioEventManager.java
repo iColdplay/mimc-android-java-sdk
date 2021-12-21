@@ -33,6 +33,7 @@ import com.xiaomi.mimcdemo.listener.OnAudioDecodedListener;
 import com.xiaomi.mimcdemo.listener.OnAudioEncodedListener;
 import com.xiaomi.mimcdemo.listener.OnCallStateListener;
 import com.xiaomi.mimcdemo.proto.AV;
+import com.xiaomi.mimcdemo.ui.ContactAdapter;
 import com.xiaomi.mimcdemo.utils.AppUtil;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 import com.xiaomi.mimcdemo.utils.PingPongAutoReplier;
@@ -126,6 +127,9 @@ public class AudioEventManager {
                     }
 
                     setPttIdle(); //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~状态转换为IDLE
+
+                    // 悬浮球
+                    ContactAdapter.setFloatBallNotTalking();
 
                     LogUtil.e(TAG, "----------MSG_FINISH handle end  ----------");
                 }
@@ -453,6 +457,9 @@ public class AudioEventManager {
             data.putLong(CustomKeys.KEY_INCOMING_CALL_ID, callId);
             message1.setData(data);
             message1.sendToTarget();
+
+            // float ball
+            ContactAdapter.setFloatBallTalking();
             return true;
         }
     }
@@ -480,6 +487,9 @@ public class AudioEventManager {
 
             message1.setData(data);
             message1.sendToTarget();
+
+            // float ball
+            ContactAdapter.setFloatBallTalking();
             return true;
         }
     }
@@ -488,6 +498,9 @@ public class AudioEventManager {
         Message message1 = Message.obtain();
         message1.what = MSG_FINISH;
         callHandler.sendMessage(message1);
+
+        // float ball
+        ContactAdapter.setFloatBallNotTalking();
         return true;
     }
 

@@ -127,9 +127,10 @@
                 android:textSize="14sp" />
 
             <Switch
+                style="@style/Switch"
                 android:visibility="gone"
                 android:id="@+id/ex_float_switch"
-                android:layout_width="43dp"
+                android:layout_width="wrap_content"
                 android:layout_height="23dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="83dp"

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:bottom="@dimen/sunmi_switch_thumb_offset_bottom"
+        android:drawable="@drawable/sunmi_ic_switch_thumb"
+        android:end="@dimen/sunmi_switch_thumb_offset_end"
+        android:start="@dimen/sunmi_switch_thumb_offset_start"
+        android:top="@dimen/sunmi_switch_thumb_offset_top" />
+</layer-list>

@@ -45,4 +45,12 @@
     <dimen name="button_margin_right">12dp</dimen>
     <dimen name="button_text_size">20sp</dimen>
 
+    <dimen name="sunmi_switch_track_height">23dp</dimen>
+    <dimen name="sunmi_switch_thumb_width">20dp</dimen>
+    <dimen name="sunmi_switch_thumb_height">20dp</dimen>
+    <dimen name="sunmi_switch_thumb_offset_start">1.5dp</dimen>
+    <dimen name="sunmi_switch_thumb_offset_end">1.5dp</dimen>
+    <dimen name="sunmi_switch_thumb_offset_top">1.5dp</dimen>
+    <dimen name="sunmi_switch_thumb_offset_bottom">1.5dp</dimen>
+
 </resources>

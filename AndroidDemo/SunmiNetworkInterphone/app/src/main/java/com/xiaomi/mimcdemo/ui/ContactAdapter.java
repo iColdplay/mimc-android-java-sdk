@@ -42,6 +42,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     public volatile static boolean shouldShowEditView = false;
 
+    public volatile static boolean isAnythingInConnection = false;
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -83,7 +85,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         binding.tvConnect.setVisibility(View.GONE);
                         binding.tvDisconnect.setVisibility(View.VISIBLE);
 
-
+                        isAnythingInConnection = true;
                     }
                     if (msg.what == 1) {
                         Toast.makeText(AppUtil.getContext(), "当前对方不在线,请稍后重试", Toast.LENGTH_SHORT).show();
@@ -164,6 +166,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             binding.tvConnect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(isAnythingInConnection){
+                        LogUtil.e(TAG, "something is in connection, so we just ignore any other connection");
+                        return;
+                    }
                     if (ViewUtil.isFastDoubleClick()) {
                         LogUtil.e(TAG, "this is fast click, just ignore it ");
                         return;
@@ -232,7 +238,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     binding.tvConnect.setVisibility(View.VISIBLE);
                     binding.tvDisconnect.setVisibility(View.GONE);
 
-
+                    isAnythingInConnection = false;
                 }
             });
 

@@ -239,6 +239,12 @@ public class HomeActivity extends Activity {
         binding.tvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(ContactAdapter.isAnythingInConnection){
+                    LogUtil.e(TAG, "something is in connection, ignore this click 1");
+                    return;
+                }
+
                 Intent intent = new Intent(HomeActivity.this, ScanActivity.class);
                 startActivityForResult(intent, ACTIVITY_RESULT_SCAN);
             }
@@ -256,6 +262,11 @@ public class HomeActivity extends Activity {
         binding.tvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(ContactAdapter.isAnythingInConnection){
+                    LogUtil.e(TAG, "something is in connection, ignore this click 1");
+                    return;
+                }
+
                 Intent it = new Intent(HomeActivity.this, ScanActivity.class);
                 startActivityForResult(it, ACTIVITY_RESULT_SCAN);
             }
@@ -264,6 +275,12 @@ public class HomeActivity extends Activity {
         binding.tvModify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(ContactAdapter.isAnythingInConnection){
+                    LogUtil.e(TAG, "something is in connection, ignore this click 1");
+                    return;
+                }
+
                 if(binding.tvModifyCancel.getVisibility() == View.VISIBLE){
                     LogUtil.e(TAG, "no more need to activate the modify mode, just return");
                     return;

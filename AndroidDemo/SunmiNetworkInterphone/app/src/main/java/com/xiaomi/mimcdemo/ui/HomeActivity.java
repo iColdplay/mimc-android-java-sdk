@@ -215,6 +215,22 @@ public class HomeActivity extends Activity {
         binding.tvIdInfo.setText("ID: " + id);
 
         initView();
+
+        // 检查是否有联系人
+        List<Contact> contactList = ContactManager.getInstance().queryData();
+        if (contactList == null || contactList.size() == 0) {
+            LogUtil.e(TAG, "no contact");
+            binding.tvModify.setVisibility(View.GONE);
+            binding.verticalDivider.setVisibility(View.GONE);
+            binding.imageNoContact.setVisibility(View.VISIBLE);
+            binding.tvNoContact.setVisibility(View.VISIBLE);
+        } else {
+            binding.imageNoContact.setVisibility(View.GONE);
+            binding.verticalDivider.setVisibility(View.VISIBLE);
+            binding.tvModify.setVisibility(View.VISIBLE);
+            binding.tvNoContact.setVisibility(View.GONE);
+        }
+        uiRefreshContact();
     }
 
     private void initView() {
@@ -378,6 +394,7 @@ public class HomeActivity extends Activity {
         }
 
         // 刷新RecycleView
+        ContactAdapter.isAnythingInConnection = false;
         binding.tvNoContact.setVisibility(View.GONE);
         binding.imageNoContact.setVisibility(View.GONE);
         binding.rvContactList.setVisibility(View.VISIBLE);
@@ -462,21 +479,6 @@ public class HomeActivity extends Activity {
     protected void onResume() {
         super.onResume();
         LogUtil.e(TAG, "onResume()");
-        // 检查是否有联系人
-        List<Contact> contactList = ContactManager.getInstance().queryData();
-        if (contactList == null || contactList.size() == 0) {
-            LogUtil.e(TAG, "no contact");
-            binding.tvModify.setVisibility(View.GONE);
-            binding.verticalDivider.setVisibility(View.GONE);
-            binding.imageNoContact.setVisibility(View.VISIBLE);
-            binding.tvNoContact.setVisibility(View.VISIBLE);
-        } else {
-            binding.imageNoContact.setVisibility(View.GONE);
-            binding.verticalDivider.setVisibility(View.VISIBLE);
-            binding.tvModify.setVisibility(View.VISIBLE);
-            binding.tvNoContact.setVisibility(View.GONE);
-        }
-        uiRefreshContact();
     }
 
     @Override

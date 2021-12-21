@@ -23,6 +23,7 @@ import com.xiaomi.mimcdemo.utils.AppUtil;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 import com.xiaomi.mimcdemo.utils.ViewUtil;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,12 +54,17 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         viewHolder.bind(list.get(position));
     }
 
+    public void swapItem(int fromPosition,int toPosition){
+        Collections.swap(list, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
     @Override
     public int getItemCount() {
         return this.list == null ? 0 : this.list.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         DesignContactItemBinding binding;
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -69,12 +75,15 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 super.handleMessage(msg);
                 if (binding != null) {
                     if (msg.what == 0) {
+                        swapItem(getAdapterPosition(), 0);
                         binding.exLlDivider.setVisibility(View.VISIBLE);
                         binding.exFlCall.setVisibility(View.VISIBLE);
                         binding.exTvFloatBall.setVisibility(View.VISIBLE);
                         binding.exFloatSwitch.setVisibility(View.VISIBLE);
                         binding.tvConnect.setVisibility(View.GONE);
                         binding.tvDisconnect.setVisibility(View.VISIBLE);
+
+
                     }
                     if (msg.what == 1) {
                         Toast.makeText(AppUtil.getContext(), "当前对方不在线,请稍后重试", Toast.LENGTH_SHORT).show();
@@ -186,6 +195,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                             message2.what = HomeActivity.MSG_HIDE_LOADING;
                             HomeActivity.mainHandler.sendMessage(message2);
 
+                            //Test!!!
+                            ret[0] = true;
+
                             if (ret[0]) {
                                 LogUtil.e("PINGPONG", "对方在线! PINGNPONG耗时: " + (System.currentTimeMillis() - start) + "ms");
 //                                binding.exLlDivider.setVisibility(View.VISIBLE);
@@ -219,6 +231,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
                     binding.tvConnect.setVisibility(View.VISIBLE);
                     binding.tvDisconnect.setVisibility(View.GONE);
+
+
                 }
             });
 

@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import com.xiaomi.mimcdemo.R;
 import com.xiaomi.mimcdemo.manager.AudioEventManager;
+import com.xiaomi.mimcdemo.ui.ContactAdapter;
 import com.xiaomi.mimcdemo.ui.HomeActivity;
+import com.xiaomi.mimcdemo.utils.AppUtil;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 
 import java.util.Objects;
@@ -36,16 +38,22 @@ public class TalkService extends Service {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent != null) {
+            if (intent != null) {
                 LogUtil.e(TAG, "TalkService receiver action: " + intent.getAction());
 
-                if(Objects.equals(intent.getAction(), ACTION_PTT_KEY_UP)){
+                if (!ContactAdapter.isAnythingInConnection) {
+                    LogUtil.e(TAG, "未连接用户!");
+                    Toast.makeText(AppUtil.getContext(), "请先连接一位用户", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (Objects.equals(intent.getAction(), ACTION_PTT_KEY_UP)) {
                     LogUtil.e(TAG, "TalkService receiver action KEY_UP");
 
-                    if(AudioEventManager.getInstance().isPttSpeaking()){
+                    if (AudioEventManager.getInstance().isPttSpeaking()) {
                         LogUtil.e(TAG, "speaking should stop now");
                         // todo stop speaking flow
-                    }else {
+                    } else {
                         LogUtil.e(TAG, "not even speaking");
                         Toast.makeText(TalkService.this, "Busy now, try it later", Toast.LENGTH_SHORT).show();
                     }
@@ -53,12 +61,12 @@ public class TalkService extends Service {
                     return;
                 }
 
-                if(Objects.equals(intent.getAction(), ACTION_PTT_KEY_DOWN)){
+                if (Objects.equals(intent.getAction(), ACTION_PTT_KEY_DOWN)) {
                     LogUtil.e(TAG, "TalkService receiver action KEY_DOWN");
-                    if(AudioEventManager.getInstance().isPttIdle()){
+                    if (AudioEventManager.getInstance().isPttIdle()) {
                         LogUtil.e(TAG, "speaking should start now");
                         // todo start speaking flow
-                    }else {
+                    } else {
                         LogUtil.e(TAG, "not even idle, we won't do anything");
                         Toast.makeText(TalkService.this, "Busy now, try it later", Toast.LENGTH_SHORT).show();
                     }
@@ -76,7 +84,7 @@ public class TalkService extends Service {
         this.callback = callback;
     }
 
-    public interface DataCallback{
+    public interface DataCallback {
         void onDataCallback(Bundle data);
     }
 
@@ -105,7 +113,7 @@ public class TalkService extends Service {
         NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("foregroundService", "前台服务", NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
             builder = new NotificationCompat.Builder(this, "foregroundService");
         } else {
@@ -130,8 +138,8 @@ public class TalkService extends Service {
         unregisterReceiver(receiver);
     }
 
-    public class TalkServiceBinder extends Binder{
-        public TalkService getService(){
+    public class TalkServiceBinder extends Binder {
+        public TalkService getService() {
             return TalkService.this;
         }
     }

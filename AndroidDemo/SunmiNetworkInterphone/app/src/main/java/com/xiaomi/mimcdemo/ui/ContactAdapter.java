@@ -19,6 +19,7 @@ import com.xiaomi.mimcdemo.common.UserManager;
 import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.DesignContactItemBinding;
 import com.xiaomi.mimcdemo.databinding.ItemNameSnBinding;
+import com.xiaomi.mimcdemo.manager.SDKUserBehaviorManager;
 import com.xiaomi.mimcdemo.utils.AppUtil;
 import com.xiaomi.mimcdemo.utils.LogUtil;
 import com.xiaomi.mimcdemo.utils.ViewUtil;

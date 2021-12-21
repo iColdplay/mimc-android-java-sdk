@@ -35,6 +35,21 @@ public class SDKUserBehaviorManager {
         UserManager.getInstance().setHandleMIMCMsgListener(onHandleMIMCMsgListener);
     }
 
+    public OnOfflineListener getListener() {
+        return listener;
+    }
+
+    public void setListener(OnOfflineListener listener) {
+        this.listener = listener;
+    }
+
+    public interface OnOfflineListener{
+        void onLine();
+        void offLine();
+    }
+
+    private OnOfflineListener listener;
+
     private final UserManager.OnHandleMIMCMsgListener onHandleMIMCMsgListener = new UserManager.OnHandleMIMCMsgListener() {
 
         @Override
@@ -54,9 +69,15 @@ public class SDKUserBehaviorManager {
             LogUtil.e(TAG, status.toString());
             if(status.equals(MIMCConstant.OnlineStatus.ONLINE)){
                 isUserOnline = true;
+                if(listener != null){
+                    listener.onLine();
+                }
             }
             if(status.equals(MIMCConstant.OnlineStatus.OFFLINE)){
                 isUserOnline = false;
+                if(listener!= null){
+                    listener.offLine();
+                }
             }
         }
 

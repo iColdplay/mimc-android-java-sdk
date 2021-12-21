@@ -194,12 +194,12 @@ public class HomeActivity extends Activity {
                     binding.tvUserTitle.setText(name);
                 }
 
-                if(msg.what == MSG_SHOW_LOADING){
+                if (msg.what == MSG_SHOW_LOADING) {
                     LogUtil.e(TAG, "HomeActivity MSG_SHOW_LOADING handle start");
                     showLoading("正在连线", false);
                 }
 
-                if(msg.what == MSG_HIDE_LOADING){
+                if (msg.what == MSG_HIDE_LOADING) {
                     LogUtil.e(TAG, "HomeActivity MSG_HIDE_LOADING handle start");
                     hideLoading();
                 }
@@ -241,7 +241,7 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                if(ContactAdapter.isAnythingInConnection){
+                if (ContactAdapter.isAnythingInConnection) {
                     LogUtil.e(TAG, "something is in connection, ignore this click 1");
                     return;
                 }
@@ -263,7 +263,7 @@ public class HomeActivity extends Activity {
         binding.tvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ContactAdapter.isAnythingInConnection){
+                if (ContactAdapter.isAnythingInConnection) {
                     LogUtil.e(TAG, "something is in connection, ignore this click 1");
                     return;
                 }
@@ -277,12 +277,12 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                if(ContactAdapter.isAnythingInConnection){
+                if (ContactAdapter.isAnythingInConnection) {
                     LogUtil.e(TAG, "something is in connection, ignore this click 1");
                     return;
                 }
 
-                if(binding.tvModifyCancel.getVisibility() == View.VISIBLE){
+                if (binding.tvModifyCancel.getVisibility() == View.VISIBLE) {
                     LogUtil.e(TAG, "no more need to activate the modify mode, just return");
                     return;
                 }
@@ -310,10 +310,10 @@ public class HomeActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                if(contactList.size() != 0){
-                    for(String sn : contactList){
+                if (contactList.size() != 0) {
+                    for (String sn : contactList) {
                         boolean ret = ContactManager.getInstance().deleteDataBySN(sn);
-                        if(ret){
+                        if (ret) {
                             LogUtil.e(TAG, "delete SN: " + sn + " successfully");
                         }
                     }
@@ -325,7 +325,34 @@ public class HomeActivity extends Activity {
             }
         });
 
+        SDKUserBehaviorManager.getInstance().setListener(listener);
     }
+
+    public SDKUserBehaviorManager.OnOfflineListener listener = new SDKUserBehaviorManager.OnOfflineListener() {
+        @Override
+        public void offLine() {
+            LogUtil.e(TAG, "now offline!!!!");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    binding.rvContactList.setEnabled(false);
+                }
+            });
+        }
+
+        @Override
+        public void onLine() {
+            LogUtil.e(TAG, "now onLine!!!!");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    binding.rvContactList.setEnabled(true);
+                    ContactAdapter.isAnythingInConnection = false;
+                    uiRefreshContact();
+                }
+            });
+        }
+    };
 
     @Override
     protected void onStart() {
@@ -464,7 +491,7 @@ public class HomeActivity extends Activity {
         if ((System.currentTimeMillis() - exitTime) > DOUBLE_CLICK_BACK_CHECK) {
             Toast.makeText(HomeActivity.this, "再按一次退出", Toast.LENGTH_SHORT).show();
             exitTime = System.currentTimeMillis();
-        }else {
+        } else {
             super.onBackPressed();
         }
     }

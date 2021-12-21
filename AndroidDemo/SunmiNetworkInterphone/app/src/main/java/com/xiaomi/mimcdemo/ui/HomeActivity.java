@@ -64,6 +64,7 @@ public class HomeActivity extends Activity {
     public static final int MSG_NEW_USER_NAME = 1004;
     public static final int MSG_SHOW_LOADING = 1005;
     public static final int MSG_HIDE_LOADING = 1006;
+    public static final int MSG_MISS_CALL_HAPPENED = 2001;
 
     private ContactAdapter contactAdapter;
 
@@ -202,6 +203,26 @@ public class HomeActivity extends Activity {
                 if (msg.what == MSG_HIDE_LOADING) {
                     LogUtil.e(TAG, "HomeActivity MSG_HIDE_LOADING handle start");
                     hideLoading();
+                }
+
+                if(msg.what == MSG_MISS_CALL_HAPPENED){
+                    LogUtil.e(TAG, "HomeActivity MSG_MISS_CALL happened");
+                    Bundle data = msg.getData();
+                    String sn = data.getString(CustomKeys.KEY_SN);
+                    List<Contact> contactList = contactAdapter.getList();
+                    Contact contact = null;
+                    int fromPosition = -1;
+                    for (int i = 0; i < contactList.size(); i++) {
+                        contact = contactList.get(i);
+                        if(contact.getSn().equals(sn)){
+                            LogUtil.e(TAG, "we find target position");
+                            fromPosition = i;
+                            break;
+                        }
+                    }
+                    if(fromPosition != -1){
+                        contactAdapter.missCallHappened(fromPosition);
+                    }
                 }
             }
         };

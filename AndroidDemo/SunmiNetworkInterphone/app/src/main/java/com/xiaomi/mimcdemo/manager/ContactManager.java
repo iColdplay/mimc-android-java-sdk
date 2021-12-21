@@ -64,6 +64,7 @@ public class ContactManager {
         ContentValues values = new ContentValues();
         values.put(DBHelper.CUSTOM_NAME, customName);
         values.put(DBHelper.SN, sn);
+        values.put(DBHelper.MISS_CALL, 0);
         long index = mDatabase.insert(DBHelper.TABLE_NAME, null, values);
         if (index == -1) {
             LogUtil.e(TAG, "insertData failed!!!");
@@ -113,7 +114,71 @@ public class ContactManager {
         int count = mDatabase.update(DBHelper.TABLE_NAME, values, DBHelper.CUSTOM_NAME + " = ?", new String[]{customName});
         LogUtil.e(TAG, "update result: " + count);
         return true;
+    }
 
+    public boolean updateDataByMissCallHappened(String customName, String sn) {
+        if (customName == null || TextUtils.isEmpty(customName) || sn == null || TextUtils.isEmpty(sn)) {
+            LogUtil.e(TAG, "param error");
+            return false;
+        }
+
+        LogUtil.e(TAG, "gonna update data, customName: " + customName + " sn: " + sn);
+
+        List<Contact> list = queryData();
+        boolean everMatch = false;
+        int currentMissCall = 0;
+        if (list != null || list.size() > 0) {
+            for (Contact contact : list){
+                if(contact.getCustomName().equals(customName) && contact.getSn().equals(sn)){
+                    LogUtil.e(TAG, "find target data");
+                    currentMissCall = contact.getMissCall();
+                    everMatch = true;
+                    break;
+                }
+            }
+        }
+        if(!everMatch){
+            LogUtil.e(TAG, "this miss call we don't need");
+            return false;
+        }
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.CUSTOM_NAME, customName);
+        values.put(DBHelper.SN, sn);
+        values.put(DBHelper.MISS_CALL, currentMissCall + 1);
+        int count = mDatabase.update(DBHelper.TABLE_NAME, values, DBHelper.CUSTOM_NAME + " = ?", new String[]{customName});
+        LogUtil.e(TAG, "update result: " + count);
+        return true;
+    }
+
+    public boolean updateMissCallTo0(String customName, String sn){
+        if (customName == null || TextUtils.isEmpty(customName) || sn == null || TextUtils.isEmpty(sn)) {
+            LogUtil.e(TAG, "param error");
+            return false;
+        }
+        LogUtil.e(TAG, "gonna update data, customName: " + customName + " sn: " + sn);
+
+        List<Contact> list = queryData();
+        boolean everMatch = false;
+        if (list != null || list.size() > 0) {
+            for (Contact contact : list){
+                if(contact.getCustomName().equals(customName) && contact.getSn().equals(sn)){
+                    LogUtil.e(TAG, "find target data");
+                    everMatch = true;
+                    break;
+                }
+            }
+        }
+        if(!everMatch){
+            LogUtil.e(TAG, "this miss call we don't need");
+            return false;
+        }
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.CUSTOM_NAME, customName);
+        values.put(DBHelper.SN, sn);
+        values.put(DBHelper.MISS_CALL, 0);
+        int count = mDatabase.update(DBHelper.TABLE_NAME, values, DBHelper.CUSTOM_NAME + " = ?", new String[]{customName});
+        LogUtil.e(TAG, "update result: " + count);
+        return true;
     }
 
     public List<Contact> queryData() {
@@ -125,7 +190,8 @@ public class ContactManager {
                 LogUtil.e(TAG, customName);
                 String sn = cursor.getString(cursor.getColumnIndex(DBHelper.SN));
                 LogUtil.e(TAG, sn);
-                Contact contact = new Contact(customName, sn);
+                int missCall = cursor.getInt(cursor.getColumnIndex(DBHelper.MISS_CALL));
+                Contact contact = new Contact(customName, sn, missCall);
                 list.add(contact);
             } while (cursor.moveToNext());
         }

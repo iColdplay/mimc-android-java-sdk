@@ -19,6 +19,7 @@ import com.xiaomi.mimcdemo.common.UserManager;
 import com.xiaomi.mimcdemo.database.Contact;
 import com.xiaomi.mimcdemo.databinding.DesignContactItemBinding;
 import com.xiaomi.mimcdemo.databinding.ItemNameSnBinding;
+import com.xiaomi.mimcdemo.manager.ContactManager;
 import com.xiaomi.mimcdemo.manager.SDKUserBehaviorManager;
 import com.xiaomi.mimcdemo.utils.AppUtil;
 import com.xiaomi.mimcdemo.utils.LogUtil;
@@ -45,6 +46,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     public volatile static boolean isAnythingInConnection = false;
 
+    public List<Contact> getList(){
+        return list;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -60,6 +65,16 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     public void swapItem(int fromPosition,int toPosition){
         Collections.swap(list, fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public void missCallHappened(int fromPosition){
+        if(isAnythingInConnection){
+            Collections.swap(list, fromPosition, 1);
+            notifyItemMoved(fromPosition, 1);
+        }else {
+            Collections.swap(list, fromPosition, 0);
+            notifyItemMoved(fromPosition, 0);
+        }
     }
 
     @Override
@@ -119,6 +134,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             }
         };
 
+        Handler missCallHandler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                binding.tvMissCall.setVisibility(View.GONE);
+            }
+        };
+
         private void send100msToActivateSpeak() {
             Message message1 = longTouchHandler.obtainMessage();
             message1.what = MSG_GO_SPEAK;
@@ -161,6 +184,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
         @SuppressLint("ClickableViewAccessibility")
         void bind(final Contact contact) {
+            int missCall = contact.getMissCall();
+            if(missCall > 0){
+                binding.tvMissCall.setVisibility(View.VISIBLE);
+                binding.tvMissCall.setText("占线未接通: " + String.valueOf(missCall));
+            }else {
+                binding.tvMissCall.setVisibility(View.GONE);
+            }
             binding.imageNormalBack.setOnTouchListener(touchListener);
             binding.contactName.setText(contact.getCustomName());
             binding.contactId.setText("ID: " + contact.getSn());
@@ -175,6 +205,15 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         LogUtil.e(TAG, "this is fast click, just ignore it ");
                         return;
                     }
+
+                    // 足够条件触发连接, 则清除掉当前联系人的miss call数据
+                    boolean clearRet = ContactManager.getInstance().updateMissCallTo0(contact.getCustomName(), contact.getSn());
+                    if(clearRet){
+                        LogUtil.e(TAG, "miss call数据已清楚");
+                    }
+                    // 关闭miss call数据的显示
+                    missCallHandler.sendEmptyMessage(0);
+
                     final boolean[] ret = {false};
                     final long start = System.currentTimeMillis();
                     final Message message1 = HomeActivity.mainHandler.obtainMessage();

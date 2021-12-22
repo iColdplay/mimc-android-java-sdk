@@ -9,7 +9,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         multiDexEnabled true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -61,6 +61,16 @@ android {
             path "CMakeLists.txt"
         }
     }
+
+    android.applicationVariants.all { variant ->
+        if (variant.buildType.name != "debug") {
+            variant.getPackageApplication().outputDirectory = new File("build/outputs/apk/" + variant.versionName+"/"+variant.buildType.name)
+        }
+        variant.outputs.all {
+            outputFileName = "SunmiNetworkIntetphone_privapp" + "_" + variant.versionName + "_sunmi_" + variant.buildType.name + ".apk"
+        }
+    }
+
 
     dataBinding{
         enabled true
